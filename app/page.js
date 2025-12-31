@@ -452,7 +452,7 @@ const CityDestinations = () => {
               className="flex-none text-center w-24 snap-start"
             >
               <a
-                href="#"
+                href="/hotels/bangalore"
                 className="group block px-1 active:scale-95 transition"
                 tabIndex={0}
               >
@@ -509,7 +509,7 @@ const HotelCard = ({ hotel }) => {
         <div className="flex items-center justify-between mt-2">
           <span className="text-lg font-bold text-[#f8a11e]">₹{hotel.price.toLocaleString("en-IN")}</span>
           <a
-            href="/hotel/happy-stays-banglore-68986"
+            href="/hotel/happy-stays-bangalore-624556"
             className="px-4 py-1.5 rounded-xl bg-[#f8a11e] text-white text-xs font-semibold hover:bg-[#ffb649] transition active:scale-95 shadow"
           >
             View Details

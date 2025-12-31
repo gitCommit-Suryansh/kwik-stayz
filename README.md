@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# KwikStayz 🏨
 
-## Getting Started
+**KwikStayz** is a modern, responsive hotel booking web application designed to help users discover and book stays in top destinations across India. Built with **Next.js** and **Tailwind CSS**, it offers a seamless user experience for finding the perfect getaway.
 
-First, run the development server:
+## ✨ Key Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+*   **Search & Discovery**: Easily search for hotels by destination, check-in/out dates, and number of guests.
+*   **Top Destinations**: Explore curated lists of popular travel spots like Goa, Mathura, Agra, and more.
+*   **Hotel Listings**: View detailed hotel cards featuring high-quality images, ratings, amenities, and pricing.
+*   **Responsive Design**: Fully optimized for all devices, featuring a mobile-first approach with a sticky search header and bottom navigation bar.
+*   **Modern UI/UX**: A clean, aesthetic interface with smooth transitions and interactive elements.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+*   **Framework**: [Next.js](https://nextjs.org/) (App Router)
+*   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+*   **Icons**: [Lucide React](https://lucide.dev/)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Getting Started
 
-## Learn More
+Follow these steps to run the project locally:
 
-To learn more about Next.js, take a look at the following resources:
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd kwik-stayz
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    # or
+    yarn install
+    # or
+    pnpm install
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3.  **Run the development server:**
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    # or
+    pnpm dev
+    ```
 
-## Deploy on Vercel
+4.  **Open your browser:**
+    Navigate to [http://localhost:3000](http://localhost:3000) to see the application in action.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📂 Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*   `app/`: Contains the main application code (pages, components, layout).
+*   `public/`: Static assets like images and icons.
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to open an issue or submit a pull request.
