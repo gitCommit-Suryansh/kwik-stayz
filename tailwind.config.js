@@ -15,6 +15,7 @@ export default {
       },
       fontFamily: {
         sans: ["var(--font-poppins)", "sans-serif"],
+        brand: ["var(--font-great-vibes)", "cursive"],
       },
     },
   },

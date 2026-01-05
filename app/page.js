@@ -17,10 +17,11 @@ import {
   Star,
   Wifi,
   Utensils,
-  Home, // Added
-  Languages, // Added
-  Phone, // Added
-  Headphones, // Added
+  Home,
+  Languages,
+  Phone,
+  Headphones,
+  Zap,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSearchSuggestions } from "@/lib/search/useSearchSuggestions";
@@ -133,7 +134,6 @@ const cityData = [
 // --- Reusable Components ---
 
 // 1. Navigation Bar (Redesigned)
-// 1. Navigation Bar (Redesigned)
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -161,14 +161,14 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-center md:justify-between h-16">
           {/* Logo & Brand */}
-          <div className="shrink-0 flex items-center gap-2 cursor-pointer">
-            <div className="w-10 h-10 bg-linear-to-br from-[#f8a11e] to-[#ffc45e] rounded-xl flex items-center justify-center text-white shadow-sm">
-              <span className="font-bold text-xl">K</span>
-            </div>
-            <span className="text-2xl font-bold text-gray-900 tracking-tight">
-              Kwik<span className="text-[#f8a11e]">Stayz</span>
+          <div className="shrink-0 flex items-center gap-1 cursor-pointer">
+            {/* <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#f8a11e]/10">
+              <Zap className="w-5 h-5 text-[#f8a11e] fill-current" />
+            </div> */}
+            <span className="text-3xl font-brand text-gray-900 tracking-wide">
+              Kwik <span className="text-[#f8a11e]">Stayz</span>
             </span>
           </div>
 
@@ -195,16 +195,6 @@ const Navbar = () => {
             <button className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold bg-[#f8a11e] text-white hover:bg-[#e0901a] transition-all transform hover:-translate-y-0.5 shadow-lg shadow-orange-200">
               <User size={18} />
               Login / Signup
-            </button>
-          </div>
-
-          {/* Mobile Nav Toggle */}
-          <div className="md:hidden flex items-center gap-3">
-            <button className="p-2 text-gray-600 bg-gray-50 rounded-full">
-              <Globe size={20} />
-            </button>
-            <button className="p-2 text-gray-600 bg-gray-50 rounded-full">
-              <User size={20} />
             </button>
           </div>
         </div>
