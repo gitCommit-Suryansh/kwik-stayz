@@ -101,6 +101,7 @@ const HotelSchema = new mongoose.Schema(
       petsAllowed: Boolean,
       idProofRequired: Boolean,
       security: String,
+      coupleAllowed: Boolean,
     },
 
     nearbyPlaces: [

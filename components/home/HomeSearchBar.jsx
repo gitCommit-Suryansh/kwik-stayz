@@ -30,7 +30,7 @@ const HomeSearchBar = forwardRef((props, ref) => {
 
     const [checkIn, setCheckIn] = useState("");
     const [checkOut, setCheckOut] = useState("");
-    const [guests, setGuests] = useState(2); // Match visual default
+    const [guests, setGuests] = useState(1); // Match visual default
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -79,15 +79,7 @@ const HomeSearchBar = forwardRef((props, ref) => {
 
     const handleSearch = () => {
         if (!selectedCitySlug && !query) return; // Basic validation
-        // If no explicit slug selection but query exists, we might need to handle free text or force selection.
-        // Ideally, for this app structure, we rely on selection. 
-        // If selectedCitySlug is empty but we have a query (e.g. from URL or typing), we might rely on what's there.
-        // For now, mirroring `SearchBar.jsx` which checks `selectedCitySlug`.
 
-        // Quick fallback logic: if we have a query that matches a cityData item, manually set it?
-        // But safely, let's stick to the selectedCitySlug requirement or minimal query usage if valid.
-
-        // Using `selectedCitySlug` is safest given the app structure.
         if (!selectedCitySlug) return;
 
         const params = new URLSearchParams();
@@ -101,9 +93,9 @@ const HomeSearchBar = forwardRef((props, ref) => {
         }
 
         // Add dates/guests if needed (not fully implemented in routing yet but good to have prepared)
-        // if (checkIn) params.set("checkIn", checkIn);
-        // if (checkOut) params.set("checkOut", checkOut);
-        // params.set("guests", guests);
+        if (checkIn) params.set("checkIn", checkIn);
+        if (checkOut) params.set("checkOut", checkOut);
+        if (guests) params.set("guests", guests);
 
         router.push(`/search?${params.toString()}`);
     };

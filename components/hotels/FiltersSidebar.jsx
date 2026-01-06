@@ -1,175 +1,278 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown, ChevronUp, Search } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import {
+  ChevronDown,
+  ChevronUp,
+  Wifi,
+  Car,
+  Utensils,
+  Wind,
+  Star
+} from "lucide-react";
+import { useState, useEffect } from "react";
 
-export default function FiltersSidebar({ localities = [], isMobile = false }) {
-  const [priceRange, setPriceRange] = useState([500, 5000]);
-  const [localitySearch, setLocalitySearch] = useState("");
+export default function FiltersSidebar({ isMobile = false }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  /* -----------------------------------------
+     State & Handlers
+  ------------------------------------------ */
+
   const [expandedSections, setExpandedSections] = useState({
-    locations: true,
     price: true,
-    collections: false,
     amenities: true,
-    rating: true,
+    rating: false,
   });
 
-  const toggleSection = (section) => {
+  const toggleSection = (key) => {
     setExpandedSections((prev) => ({
       ...prev,
-      [section]: !prev[section],
+      [key]: !prev[key],
     }));
   };
 
-  const filteredLocalities = localities.filter((loc) =>
-    loc.name.toLowerCase().includes(localitySearch.toLowerCase())
-  );
+  // Local state for deferred application
+  const [filters, setFilters] = useState({
+    priceMin: null,
+    priceMax: null,
+    amenities: [],
+    rating: null,
+  });
+
+  // Sync with URL when it changes (initial load or navigation)
+  useEffect(() => {
+    const pMin = searchParams.get("priceMin");
+    const pMax = searchParams.get("priceMax");
+    const am = searchParams.get("amenities");
+    const r = searchParams.get("rating");
+
+    setFilters({
+      priceMin: pMin !== null ? Number(pMin) : null,
+      priceMax: pMax !== null ? Number(pMax) : null,
+      amenities: am ? am.split(",") : [],
+      rating: r !== null ? Number(r) : null,
+    });
+  }, [searchParams]);
+
+  const handlePriceSelect = (min, max) => {
+    setFilters((prev) => ({ ...prev, priceMin: min, priceMax: max }));
+  };
+
+  const handleAmenityToggle = (key) => {
+    setFilters((prev) => {
+      const active = prev.amenities;
+      if (active.includes(key)) {
+        return { ...prev, amenities: active.filter((k) => k !== key) };
+      } else {
+        return { ...prev, amenities: [...active, key] };
+      }
+    });
+  };
+
+  const handleRatingSelect = (r) => {
+    setFilters((prev) => ({ ...prev, rating: r }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      priceMin: null,
+      priceMax: null,
+      amenities: [],
+      rating: null,
+    });
+  };
+
+  const applyFilters = () => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    // Price
+    if (filters.priceMin !== null) params.set("priceMin", filters.priceMin);
+    else params.delete("priceMin");
+
+    if (filters.priceMax !== null) params.set("priceMax", filters.priceMax);
+    else params.delete("priceMax");
+
+    // Amenities
+    if (filters.amenities.length > 0)
+      params.set("amenities", filters.amenities.join(","));
+    else params.delete("amenities");
+
+    // Rating
+    if (filters.rating !== null) params.set("rating", filters.rating);
+    else params.delete("rating");
+
+    router.push(`/search?${params.toString()}`);
+  };
+
+  /* -----------------------------------------
+     Active State Checkers (Local State)
+  ------------------------------------------ */
+
+  const isActivePrice = (min, max) => {
+    return filters.priceMin === min && filters.priceMax === max;
+  };
+
+  const isActiveRating = (r) => {
+    return filters.rating === r;
+  };
+
+  const isAmenitySelected = (key) => filters.amenities.includes(key);
+
+  const hasActiveFilters =
+    filters.priceMin !== null ||
+    filters.amenities.length > 0 ||
+    filters.rating !== null;
+
+  /* -----------------------------------------
+     Reusable Section Wrapper
+  ------------------------------------------ */
 
   const FilterSection = ({ title, sectionKey, children }) => (
-    <div className="border-b border-gray-200 last:border-0">
+    <div className="border-b border-gray-100 last:border-0">
       <button
         onClick={() => toggleSection(sectionKey)}
-        className="w-full flex items-center justify-between py-4 text-left"
+        className="w-full flex items-center justify-between py-2 text-left group"
       >
-        <h3 className="font-semibold text-gray-900">{title}</h3>
+        <h3 className="font-semibold text-gray-900 text-sm">{title}</h3>
         {expandedSections[sectionKey] ? (
-          <ChevronUp className="w-5 h-5 text-gray-500" />
+          <ChevronUp className="w-4 h-4 text-gray-400 group-hover:text-emerald-600" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-gray-500" />
+          <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-emerald-600" />
         )}
       </button>
       {expandedSections[sectionKey] && (
-        <div className="pb-4">{children}</div>
+        <div className="pb-2 space-y-1 text-sm scale-in">{children}</div>
       )}
     </div>
   );
 
   return (
-    <div className={`bg-white overflow-hidden ${isMobile ? "" : "rounded-xl shadow-sm sticky top-24"}`}>
+    <div
+      className={`bg-white flex flex-col ${isMobile
+        ? "h-full"
+        : "rounded-xl shadow-sm border border-gray-100 sticky top-24 max-h-[calc(100vh-8rem)]"
+        }`}
+    >
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 bg-gray-50">
-        <h2 className="text-lg font-bold text-gray-900">Filters</h2>
-      </div>
-
-      <div className="divide-y divide-gray-200 p-2">
-        {/* Popular Locations */}
-        {localities.length > 0 && (
-          <FilterSection title="Popular locations in Bangalore" sectionKey="locations">
-            {/* Search Localities */}
-            <div className="relative mb-3">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                value={localitySearch}
-                onChange={(e) => setLocalitySearch(e.target.value)}
-                placeholder="Search..."
-                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
-
-            {/* Locality Chips */}
-            <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
-              {(localitySearch ? filteredLocalities : localities.slice(0, 8)).map((locality) => (
-                <button
-                  key={locality.slug}
-                  className="px-3 py-1.5 bg-gray-100 hover:bg-emerald-50 text-gray-700 hover:text-emerald-700 text-sm rounded-full border border-transparent hover:border-emerald-500 transition-colors"
-                >
-                  {locality.name}
-                </button>
-              ))}
-            </div>
-
-            {localities.length > 8 && !localitySearch && (
-              <button className="text-sm text-emerald-600 font-medium mt-3 hover:text-emerald-700">
-                + View More
-              </button>
-            )}
-          </FilterSection>
+      <div className="px-3 py-2 border-b border-gray-100 bg-gray-50/50 rounded-t-xl flex justify-between items-center shrink-0">
+        <h2 className="text-base font-bold text-gray-900">Filters</h2>
+        {hasActiveFilters && (
+          <button
+            onClick={clearFilters}
+            className="text-xs font-medium text-red-500 hover:text-red-600"
+          >
+            Clear All
+          </button>
         )}
+      </div>
 
-        {/* Price Range */}
-        <FilterSection title="Price" sectionKey="price">
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm font-medium text-gray-700">
-              <span>₹{priceRange[0]}</span>
-              <span>₹{priceRange[1]}</span>
-            </div>
-            <input
-              type="range"
-              min="500"
-              max="10000"
-              step="100"
-              value={priceRange[1]}
-              onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-            />
-            <div className="flex gap-2">
-              <input
-                type="number"
-                value={priceRange[0]}
-                onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Min"
-              />
-              <input
-                type="number"
-                value={priceRange[1]}
-                onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Max"
-              />
-            </div>
-          </div>
+      {/* Scrollable Content */}
+      <div className="px-3 py-1 overflow-y-auto flex-1 custom-scrollbar">
+        {/* PRICE */}
+        <FilterSection title="Price Range" sectionKey="price">
+          {[
+            { min: 0, max: 1500, label: "Below ₹1500" },
+            { min: 1500, max: 3000, label: "₹1500 – ₹3000" },
+            { min: 3000, max: 6000, label: "₹3000 – ₹6000" },
+            { min: 6000, max: null, label: "Above ₹6000" },
+          ].map((p) => {
+            const active = isActivePrice(p.min, p.max);
+            return (
+              <button
+                key={p.label}
+                onClick={() => handlePriceSelect(p.min ?? null, p.max ?? null)}
+                className={`w-full text-left px-3 py-1.5 rounded-lg border transition-all duration-200 text-sm
+                ${active
+                    ? "border-emerald-500 bg-emerald-50/80 text-emerald-700 font-medium shadow-sm ring-1 ring-emerald-500/20"
+                    : "border-gray-200 text-gray-600 hover:border-emerald-300 hover:text-emerald-600 hover:bg-gray-50"
+                  }`}
+              >
+                {p.label}
+              </button>
+            );
+          })}
         </FilterSection>
 
-        {/* Amenities */}
+        {/* AMENITIES */}
         <FilterSection title="Amenities" sectionKey="amenities">
-          <div className="space-y-2">
-            {[
-              { name: "AC", icon: "❄️" },
-              { name: "Free WiFi", icon: "📶" },
-              { name: "Parking", icon: "🅿️" },
-              { name: "Breakfast", icon: "🍳" },
-              { name: "Elevator", icon: "🛗" },
-              { name: "Power Backup", icon: "🔋" },
-              { name: "Swimming Pool", icon: "🏊" },
-              { name: "Gym", icon: "💪" },
-            ].map((amenity) => (
-              <label key={amenity.name} className="flex items-center gap-2 cursor-pointer group">
+          {[
+            { key: "Free WiFi", label: "Free WiFi", icon: Wifi },
+            { key: "Parking", label: "Parking", icon: Car },
+            { key: "Breakfast", label: "Breakfast", icon: Utensils },
+            { key: "AC", label: "AC", icon: Wind },
+          ].map((a) => {
+            const isSelected = isAmenitySelected(a.key);
+            const Icon = a.icon;
+
+            return (
+              <label
+                key={a.key}
+                className={`flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer border transition-all duration-200
+                ${isSelected
+                    ? "border-emerald-500 bg-emerald-50/80 ring-1 ring-emerald-500/20"
+                    : "border-transparent hover:bg-gray-50"
+                  }`}
+              >
                 <input
                   type="checkbox"
+                  checked={isSelected}
+                  onChange={() => handleAmenityToggle(a.key)}
                   className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                 />
-                <span className="text-sm text-gray-700 group-hover:text-emerald-600 transition-colors">
-                  {amenity.icon} {amenity.name}
-                </span>
+                <div
+                  className={`flex items-center gap-2 ${isSelected ? "text-emerald-700 font-medium" : "text-gray-600"
+                    }`}
+                >
+                  <Icon
+                    className={`w-4 h-4 ${isSelected ? "text-emerald-600" : "text-gray-400"
+                      }`}
+                  />
+                  <span className="text-sm">{a.label}</span>
+                </div>
               </label>
-            ))}
-          </div>
+            );
+          })}
         </FilterSection>
 
-        {/* Guest Rating */}
+        {/* RATING */}
         <FilterSection title="Guest Rating" sectionKey="rating">
-          <div className="space-y-2">
-            {["4.5+", "4.0+", "3.5+", "3.0+"].map((rating) => (
-              <label key={rating} className="flex items-center gap-2 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
-                />
-                <span className="text-sm text-gray-700 group-hover:text-emerald-600 transition-colors flex items-center gap-1">
-                  <span className="text-yellow-500">★</span> {rating}
-                </span>
-              </label>
-            ))}
-          </div>
+          {[9, 8, 7].map((r) => {
+            const active = isActiveRating(r);
+            return (
+              <button
+                key={r}
+                onClick={() => handleRatingSelect(r)}
+                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg border transition-all duration-200 text-sm
+                ${active
+                    ? "border-emerald-500 bg-emerald-50/80 text-emerald-700 font-medium shadow-sm ring-1 ring-emerald-500/20"
+                    : "border-gray-200 text-gray-600 hover:border-emerald-300 hover:text-emerald-600 hover:bg-gray-50"
+                  }`}
+              >
+                <span>{r}+ Rated</span>
+                <div className="flex items-center gap-0.5">
+                  <span className="text-xs font-semibold">{r}</span>
+                  <Star
+                    className={`w-3 h-3 ${active
+                      ? "fill-emerald-600 text-emerald-600"
+                      : "fill-amber-400 text-amber-400"
+                      }`}
+                  />
+                </div>
+              </button>
+            );
+          })}
         </FilterSection>
       </div>
 
-      {/* Clear All Button */}
-      <div className="p-4 border-t border-gray-200">
-        <button className="w-full py-2.5 text-emerald-600 font-semibold border-2 border-emerald-500 rounded-lg hover:bg-emerald-50 transition-colors">
-          Clear All Filters
+      {/* Footer / Apply Button */}
+      <div className="p-3 border-t border-gray-100 bg-white rounded-b-xl shrink-0">
+        <button
+          onClick={applyFilters}
+          className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors active:scale-[0.98]"
+        >
+          Apply Filters
         </button>
       </div>
     </div>

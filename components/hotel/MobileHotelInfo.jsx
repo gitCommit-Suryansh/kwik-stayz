@@ -4,7 +4,7 @@ export default function MobileHotelInfo({ hotel }) {
     <div className="md:hidden px-1 pt-2 pb-6">
       <span className="inline-flex items-center gap-2 bg-gray-100 text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-lg mb-3">
         <Building size={16} />
-        Company-Serviced
+        Professional Host
       </span>
       <h1 className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
         {hotel.name}

@@ -19,7 +19,7 @@ export default function MobilePricingDetails({ hotel, pricingRef, selectedRoom }
             <BadgePercent size={18} />
             Apply coupon
           </button>
-          <a href="#" className="text-sm font-semibold text-blue-600">More offers</a>
+
         </div>
       </div>
       <div>
@@ -27,11 +27,11 @@ export default function MobilePricingDetails({ hotel, pricingRef, selectedRoom }
         <form className="space-y-4">
           <div>
             <label htmlFor="full-name" className="block text-sm font-medium text-gray-700 mb-1">Full name</label>
-            <input 
-              type="text" 
-              id="full-name" 
-              placeholder="First name and last name" 
-              className="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
+            <input
+              type="text"
+              id="full-name"
+              placeholder="First name and last name"
+              className="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -40,21 +40,21 @@ export default function MobilePricingDetails({ hotel, pricingRef, selectedRoom }
               <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-600 text-sm">
                 +91
               </span>
-              <input 
-                type="tel" 
-                id="mobile-number" 
-                placeholder="Enter mobile number" 
-                className="w-full border-gray-300 rounded-r-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
+              <input
+                type="tel"
+                id="mobile-number"
+                placeholder="Enter mobile number"
+                className="w-full border-gray-300 rounded-r-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
             </div>
           </div>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
-            <input 
-              type="email" 
-              id="email" 
-              placeholder="abc@xyz.com" 
-              className="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
+            <input
+              type="email"
+              id="email"
+              placeholder="abc@xyz.com"
+              className="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
           </div>
           <button

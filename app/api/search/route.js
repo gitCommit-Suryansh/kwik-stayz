@@ -15,6 +15,15 @@ export async function GET(req) {
     const citySlug = searchParams.get("city");
     const localitySlug = searchParams.get("locality");
     const categorySlug = searchParams.get("category");
+    const priceMinParam = searchParams.get("priceMin");
+    const priceMaxParam = searchParams.get("priceMax");
+    const amenitiesParam = searchParams.get("amenities"); // "wifi,parking"
+    const ratingParam = Number(searchParams.get("rating"));
+    const sortParam = searchParams.get("sort");
+
+    const priceMin = priceMinParam !== null ? Number(priceMinParam) : undefined;
+
+    const priceMax = priceMaxParam !== null ? Number(priceMaxParam) : undefined;
 
     if (!citySlug) {
       return NextResponse.json(
@@ -52,7 +61,57 @@ export async function GET(req) {
     if (locality) query.locality = locality._id;
     if (category) query.categories = category._id;
 
+    // Price filter (OPTIONAL)
+    if (priceMin !== undefined || priceMax !== undefined) {
+      query.priceStartingFrom = {};
+
+      if (priceMin !== undefined && !isNaN(priceMin)) {
+        query.priceStartingFrom.$gte = priceMin;
+      }
+
+      if (priceMax !== undefined && !isNaN(priceMax)) {
+        query.priceStartingFrom.$lte = priceMax;
+      }
+    }
+
+    // Amenities filter
+    if (amenitiesParam) {
+      const amenities = amenitiesParam.split(","); // ["wifi","parking"]
+      query.hotelAmenities = { $all: amenities };
+    }
+
+    // Rating filter
+    if (ratingParam) {
+      const ratingScaled = Math.floor(Number(ratingParam) * 10);
+      if (!isNaN(ratingScaled)) {
+        query.rating = { $gte: ratingScaled };
+      }
+    }
+
+    //Sorting filtering
+
+    let sortQuery = {};
+
+    switch (sortParam) {
+      case "price_asc":
+        sortQuery = { priceStartingFrom: 1 };
+        break;
+
+      case "price_desc":
+        sortQuery = { priceStartingFrom: -1 };
+        break;
+
+      case "rating_desc":
+        sortQuery = { rating: -1 };
+        break;
+
+      default:
+        // Popularity / default
+        sortQuery = {};
+    }
+
     const hotels = await Hotel.find(query)
+      .sort(sortQuery)
       .populate("city", "name slug")
       .populate("locality", "name slug")
       .select(

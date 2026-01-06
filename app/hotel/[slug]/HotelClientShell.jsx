@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Star, Wifi, Utensils, MapPin, Users, Sparkles } from "lucide-react";
-import { CheckCircle, Clock, ShieldCheck } from "lucide-react";
+// import { CheckCircle, Clock, ShieldCheck } from "lucide-react";
 
 
 /* IMPORT ALL YOUR COMPONENTS HERE */
@@ -51,7 +51,7 @@ export default function HotelClientShell({ hotel }) {
         <div className="bg-white rounded-b-2xl md:rounded-2xl md:shadow-2xl mt-0 md:mt-8 overflow-hidden mb-0 md:mb-6">
           <Hero hotel={hotel} />
         </div>
-        <div className="flex flex-col lg:flex-row gap-8 px-4 md:px-6">
+        <div className="flex flex-col lg:flex-row gap-8 px-2 md:px-3">
           <div className="flex-1 bg-white rounded-2xl shadow-lg p-6 md:p-8 lg:p-10 -mt-8 md:mt-0 relative z-10">
             <div className="md:hidden">
               <Breadcrumb city={hotel.city.name} cityName={hotel.city.slug} locality={hotel.locality.name} localityName={hotel.locality.slug} />
@@ -69,16 +69,7 @@ export default function HotelClientShell({ hotel }) {
             />
             <AboutSection description={hotel.description || ""} />
             <AmenitiesGrid amenities={hotel.hotelAmenities || []} />
-            {/* <PoliciesSection policies={(() => {
-              const p = hotel.policies || {};
-              const arr = [];
-              if (p.checkIn) arr.push({ icon: Clock, title: "Check-in", value: p.checkIn });
-              if (p.checkOut) arr.push({ icon: Clock, title: "Check-out", value: p.checkOut });
-              if (typeof p.petsAllowed !== "undefined") arr.push({ icon: X, title: "Pets", value: p.petsAllowed ? "Allowed" : "Not allowed" });
-              if (typeof p.idProofRequired !== "undefined") arr.push({ icon: CheckCircle, title: "ID Proof", value: p.idProofRequired ? "Required" : "Not required" });
-              if (p.security) arr.push({ icon: ShieldCheck, title: "Safety", value: p.security });
-              return arr;
-            })()} /> */}
+            <PoliciesSection policies={hotel.policies || {}} />
 
             <MapSection
               geo={{
