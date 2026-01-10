@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Star, Wifi, Utensils, MapPin, Users, Sparkles } from "lucide-react";
 // import { CheckCircle, Clock, ShieldCheck } from "lucide-react";
-
+import { calculateBookingPrice } from "@/lib/booking/calculateBookingPrice";
 
 /* IMPORT ALL YOUR COMPONENTS HERE */
 import StickyHotelHeader from "@/components/hotel/StickyHotelHeader";
@@ -26,11 +27,102 @@ import SimilarHotels from "@/components/hotel/SimilarHotels";
 import AboutSection from "@/components/hotel/AboutSection";
 
 export default function HotelClientShell({ hotel }) {
+  const router = useRouter();
   const pricingRef = useRef(null);
   const [isBottomBarVisible, setIsBottomBarVisible] = useState(true);
   const [selectedRoom, setSelectedRoom] = useState(
     hotel.roomTypes?.[0] || null
   );
+
+  // Helper to get local date string YYYY-MM-DD
+  const getLocalDateString = (addDays = 0) => {
+    const date = new Date();
+    date.setDate(date.getDate() + addDays);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const [checkIn, setCheckIn] = useState(getLocalDateString(0));
+  const [checkOut, setCheckOut] = useState(getLocalDateString(1));
+  const [rooms, setRooms] = useState([{ id: 1, guests: 1, extras: 0 }]);
+
+  // Room Management Helpers
+  const addRoom = () => {
+    setRooms([...rooms, { id: rooms.length + 1, guests: 1, extras: 0 }]);
+  };
+
+  const removeRoom = (index) => {
+    setRooms(rooms.filter((_, i) => i !== index));
+  };
+
+  const updateRoom = (index, field, value) => {
+    const newRooms = [...rooms];
+    newRooms[index] = { ...newRooms[index], [field]: value };
+    setRooms(newRooms);
+  };
+
+  // Pricing Calculation
+  const pricingResult = useMemo(() => {
+    if (checkIn && checkOut && selectedRoom) {
+      try {
+        return calculateBookingPrice({
+          roomType: selectedRoom,
+          checkIn,
+          checkOut,
+          rooms,
+        });
+      } catch (error) {
+        console.error("Pricing calculation error:", error);
+        return null;
+      }
+    }
+    return null;
+  }, [checkIn, checkOut, selectedRoom, rooms]);
+
+  // Booking Handler
+  const handleBookNow = (guestDetails = null) => {
+    if (!pricingResult || !pricingResult.valid) return;
+
+    // Sanitize guestDetails: if it comes from an event (onClick), it might be an Event object.
+    // We only want it if it's a plain object with our expected fields.
+    const safeGuestDetails =
+      guestDetails && typeof guestDetails === 'object' && !guestDetails.nativeEvent && !guestDetails.preventDefault
+        ? guestDetails
+        : null;
+
+    const payload = {
+      hotel: {
+        id: hotel.id || hotel._id, // Ensure ID is captured
+        name: hotel.name,
+        city: hotel.city?.name || hotel.city,
+        locality: hotel.locality?.name || hotel.locality,
+        address: hotel.address,
+      },
+      roomType: {
+        name: selectedRoom.name,
+        slug: selectedRoom.slug,
+        basePrice: selectedRoom.basePrice,
+        extraGuestPricing: selectedRoom.extraGuestPricing,
+      },
+      stay: {
+        checkIn,
+        checkOut,
+        nights: pricingResult.nights,
+      },
+      rooms,
+      pricing: pricingResult.pricing,
+      guestDetails: safeGuestDetails,
+    };
+
+    try {
+      sessionStorage.setItem("checkout_payload", JSON.stringify(payload));
+      router.push("/checkout");
+    } catch (error) {
+      console.error("Failed to save checkout payload", error);
+    }
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -99,16 +191,51 @@ export default function HotelClientShell({ hotel }) {
               hotel={hotel}
               pricingRef={pricingRef}
               selectedRoom={selectedRoom || {}}
+              checkIn={checkIn}
+              setCheckIn={setCheckIn}
+              checkOut={checkOut}
+              setCheckOut={setCheckOut}
+              rooms={rooms}
+              addRoom={addRoom}
+              removeRoom={removeRoom}
+              updateRoom={updateRoom}
+              pricingResult={pricingResult}
+              onBookNow={handleBookNow}
             />
             <SimilarHotels hotels={hotel.similarHotels || []} />
           </div>
-          <BookingCard hotel={{ ...hotel, minPrice: hotel.priceStartingFrom, originalPrice: hotel.originalPrice, rating: hotel.rating, reviewCount: hotel.reviewCount }} selectedRoom={selectedRoom || {}} />
+          <BookingCard
+            hotel={{
+              ...hotel,
+              minPrice: hotel.priceStartingFrom,
+              originalPrice: hotel.originalPrice,
+              rating: hotel.rating,
+              reviewCount: hotel.reviewCount,
+            }}
+            selectedRoom={selectedRoom || {}}
+            checkIn={checkIn}
+            setCheckIn={setCheckIn}
+            checkOut={checkOut}
+            setCheckOut={setCheckOut}
+            rooms={rooms}
+            addRoom={addRoom}
+            removeRoom={removeRoom}
+            updateRoom={updateRoom}
+            pricingResult={pricingResult}
+            onBookNow={handleBookNow}
+          />
         </div>
       </div>
       <MobileStickyBookingBar
-        hotel={{ ...hotel, minPrice: hotel.priceStartingFrom, originalPrice: hotel.originalPrice, taxes: hotel.taxes }}
+        hotel={{
+          ...hotel,
+          minPrice: hotel.priceStartingFrom,
+          originalPrice: hotel.originalPrice,
+          taxes: hotel.taxes,
+        }}
         isVisible={isBottomBarVisible}
         selectedRoom={selectedRoom || {}}
+        onBookNow={handleBookNow}
       />
     </div >
   );

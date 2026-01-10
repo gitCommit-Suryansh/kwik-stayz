@@ -32,7 +32,7 @@ export default function MapSection({ geo, nearby = [] }) {
               key={idx}
               className="flex items-center gap-3 md:py-2 md:px-4 md:bg-gray-50 md:border md:border-gray-200 md:rounded-lg md:hover:bg-gray-100 md:transition"
             >
-              <MapPin size={18} className="text-[#f8a11e] flex-shrink-0" />
+              <MapPin size={18} className="text-red-500 flex-shrink-0" />
               <span className="font-medium text-sm">{place}</span>
             </li>
           ))}

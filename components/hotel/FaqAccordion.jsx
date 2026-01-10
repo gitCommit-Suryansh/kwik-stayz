@@ -12,7 +12,7 @@ export default function FaqAccordion({ faqs }) {
               onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
             >
               <span>{f.q}</span>
-              <span className={`text-xl md:text-2xl text-[#f8a11e] transform transition-transform ${openIdx === idx ? 'rotate-45' : ''}`}>+</span>
+              <span className={`text-xl md:text-2xl text-red-500 transform transition-transform ${openIdx === idx ? 'rotate-45' : ''}`}>+</span>
             </button>
             {openIdx === idx && <div className="px-5 pb-4 md:px-6 md:pb-5 text-gray-700 text-sm leading-relaxed bg-gray-50">{f.a}</div>}
           </div>

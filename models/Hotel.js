@@ -40,14 +40,9 @@ const RoomTypeSchema = new mongoose.Schema(
 
     // Extra guest pricing (percentage per night)
     extraGuestPricing: {
-      adultPercent: {
-        type: Number,
-        default: 35, // %
-      },
-      childPercent: {
-        type: Number,
-        default: 25, // %
-      },
+      type: Number,
+      required: true,
+      default: 35, // %
     },
 
     beds: {

@@ -1,5 +1,5 @@
 import React from "react";
-export default function MobileStickyBookingBar({ hotel, isVisible, selectedRoom }) {
+export default function MobileStickyBookingBar({ hotel, isVisible, selectedRoom, onBookNow }) {
   const price = selectedRoom ? selectedRoom.basePrice : hotel.minPrice;
   const originalPrice = selectedRoom ? selectedRoom.originalPrice : hotel.originalPrice;
   return (
@@ -17,6 +17,7 @@ export default function MobileStickyBookingBar({ hotel, isVisible, selectedRoom 
         </div>
         <button
           type="button"
+          onClick={onBookNow}
           className="w-1/2 py-3.5 rounded-lg font-semibold text-lg bg-red-500 text-white hover:bg-red-600 transition shadow-lg active:scale-95"
         >
           Book now
