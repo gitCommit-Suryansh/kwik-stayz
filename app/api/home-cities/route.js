@@ -17,9 +17,9 @@ export async function GET() {
 
     return NextResponse.json(homeCities, {
       status: 200,
-      headers: {
-        "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=3600",
-      },
+      // headers: {
+      //   "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=3600",
+      // },
     });
   } catch (error) {
     console.error("GET /api/home-cities error:", error);
