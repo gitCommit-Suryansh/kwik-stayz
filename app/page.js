@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation";
 // import SearchSuggestions from "@/components/search/SearchSuggestions";
 import SearchBar from "@/components/home/HomeSearchBar";
 import { useAuth } from "@/context/AuthContext";
+import { fetchHomeCities } from "@/lib/Home";
 
 // --- Mock Data (Unchanged) ---
 const hotelData = [
@@ -229,22 +230,17 @@ const CityDestinations = () => {
   const [cities, setCities] = useState([]);
 
   useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const res = await fetch("/api/home-cities");
-        if (res.ok) {
-          const data = await res.json();
-          const sortedCities = data
-            .filter((item) => item.isActive)
-            .sort((a, b) => a.order - b.order)
-            .slice(0, 10);
-          setCities(sortedCities);
-        }
-      } catch (error) {
-        console.error("Failed to fetch cities:", error);
+    const loadCities = async () => {
+      const data = await fetchHomeCities();
+      if (data) {
+        const sortedCities = data
+          .filter((item) => item.isActive)
+          .sort((a, b) => a.order - b.order)
+          .slice(0, 10);
+        setCities(sortedCities);
       }
     };
-    fetchCities();
+    loadCities();
   }, []);
 
   return (

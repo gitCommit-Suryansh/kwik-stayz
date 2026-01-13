@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
+
 import { connectDB } from "@/lib/db";
 import HomeCity from "@/models/HomeCity";
 import City from "@/models/City"; // Ensure City model is registered
@@ -13,12 +15,17 @@ export async function GET() {
       .sort({ order: 1 }) // Sort by priority order
       .lean();
 
-    return NextResponse.json(homeCities, { status: 200 });
+    return NextResponse.json(homeCities, {
+      status: 200,
+      headers: {
+        "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=3600",
+      },
+    });
   } catch (error) {
     console.error("GET /api/home-cities error:", error);
     return NextResponse.json(
       { message: "Failed to fetch home cities" },
-      { status: 500 }
+      { status: 500, headers: { "Cache-Control": "no-cache" } }
     );
   }
 }
@@ -73,6 +80,8 @@ export async function POST(request) {
       order,
       isActive: isActive !== undefined ? isActive : true,
     });
+
+    revalidateTag("home-cities");
 
     return NextResponse.json(newHomeCity, { status: 201 });
   } catch (error) {
