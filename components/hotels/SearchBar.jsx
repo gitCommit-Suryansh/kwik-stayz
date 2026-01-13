@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { useSearchSuggestions } from "@/lib/search/useSearchSuggestions";
 import SearchSuggestions from "@/components/search/SearchSuggestions";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SearchBar({ city }) {
   const [query, setQuery] = useState("");
@@ -22,9 +23,7 @@ export default function SearchBar({ city }) {
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
 
-
-
-
+  const { user, logout } = useAuth();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -265,12 +264,34 @@ export default function SearchBar({ city }) {
 
               {/* Login / Signup */}
               <div className="flex items-center divide-x divide-gray-300">
-                <button className="px-3 text-sm font-bold text-gray-700 hover:text-[#f02f32] transition-colors">
-                  Login
-                </button>
-                <button className="px-3 text-sm font-bold text-gray-700 hover:text-[#f02f32] transition-colors">
-                  Signup
-                </button>
+                {user ? (
+                  <div className="flex items-center gap-3 pl-3">
+                    <span className="text-sm font-bold text-gray-700">
+                      Hi, {user.name?.split(" ")[0] || "User"}
+                    </span>
+                    <button
+                      onClick={logout}
+                      className="text-sm font-bold text-red-600 hover:text-red-700 transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => router.push("/auth/login")}
+                      className="px-3 text-sm font-bold text-gray-700 hover:text-[#f02f32] transition-colors"
+                    >
+                      Login
+                    </button>
+                    <button
+                      onClick={() => router.push("/auth/login")}
+                      className="px-3 text-sm font-bold text-gray-700 hover:text-[#f02f32] transition-colors"
+                    >
+                      Signup
+                    </button>
+                  </>
+                )}
               </div>
             </div>
 

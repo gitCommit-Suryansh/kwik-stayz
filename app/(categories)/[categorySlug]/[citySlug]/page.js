@@ -4,8 +4,12 @@ import { notFound } from "next/navigation";
 import SearchBar from "@/components/hotels/SearchBar";
 import FiltersSidebar from "@/components/hotels/FiltersSidebar";
 import HotelCard from "@/components/hotels/HotelCard";
+import { SortSelect } from "@/components/common/SortModal";
+import MobileSearchActions from "@/components/common/MobileSearchActions";
 
 import { fetchHotelsByCategoryCity } from "@/lib/hotels";
+import { fetchSearchResults } from "@/lib/hotels";
+
 import { generateFaqSchema } from "@/lib/seo/generateFaqSchema";
 
 /* ---------------- SEO METADATA ---------------- */
@@ -64,10 +68,24 @@ export async function generateMetadata({ params }) {
 
 /* ---------------- PAGE ---------------- */
 
-export default async function CategoryCityHotelsPage({ params }) {
+export default async function CategoryCityHotelsPage({ params, searchParams }) {
   const { categorySlug, citySlug } = await params;
 
-  const data = await fetchHotelsByCategoryCity(categorySlug, citySlug);
+  const { locality, priceMin, priceMax, amenities, rating, sort } =
+    await searchParams;
+
+  const query = {
+    city: citySlug,
+    category: categorySlug,
+    locality,
+    priceMin,
+    priceMax,
+    amenities,
+    rating,
+    sort,
+  };
+
+  const data = await fetchSearchResults(query);
 
   if (!data) {
     notFound();
@@ -150,13 +168,36 @@ export default async function CategoryCityHotelsPage({ params }) {
                 {hotels.length}+ {category.name} in {city.name}
               </p>
             </div>
+            <div className="flex items-center gap-3">
+              <button className="hidden md:flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-emerald-500 transition-colors">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                  />
+                </svg>
+                <span className="text-sm font-medium">Map View</span>
+              </button>
+
+              <SortSelect basePath={`/${category.slug}/${city.slug}`} />
+            </div>
           </div>
 
           {/* MAIN LAYOUT */}
           <div className="flex gap-6">
             {/* FILTERS */}
             <aside className="hidden lg:block w-72 shrink-0">
-              <FiltersSidebar localities={localities} />
+              <FiltersSidebar
+                localities={localities}
+                basePath={`/${category.slug}/${city.slug}`}
+              />
             </aside>
 
             {/* HOTEL LIST */}
@@ -198,6 +239,10 @@ export default async function CategoryCityHotelsPage({ params }) {
             </div>
           </article>
         </div>
+        <MobileSearchActions
+          localities={localities}
+          basePath={`/${category.slug}/${city.slug}`}
+        />
       </main>
 
       {/* -------- Breadcrumb Schema -------- */}
