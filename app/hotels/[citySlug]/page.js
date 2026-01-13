@@ -11,6 +11,8 @@ import { fetchHotelsByCity } from "@/lib/hotels";
 import { getCitySeoContent } from "@/lib/seo/citySeo";
 import { generateFaqSchema } from "@/lib/seo/generateFaqSchema";
 
+import { fetchSearchResults } from "@/lib/hotels";
+
 /* ---------------- SEO METADATA ---------------- */
 
 export async function generateMetadata({ params }) {
@@ -64,9 +66,23 @@ export async function generateMetadata({ params }) {
 
 /* ---------------- PAGE ---------------- */
 
-export default async function HotelsByCityPage({ params }) {
+export default async function HotelsByCityPage({ params, searchParams }) {
   const { citySlug } = await params;
-  const data = await fetchHotelsByCity(citySlug);
+  const { locality, category, priceMin, priceMax, amenities, rating, sort } =
+    await searchParams;
+
+  const query = {
+    city: citySlug,
+    locality,
+    category,
+    priceMin,
+    priceMax,
+    amenities,
+    rating,
+    sort,
+  };
+
+  const data = await fetchSearchResults(query);
 
   if (!data) {
     return notFound();
@@ -158,7 +174,7 @@ export default async function HotelsByCityPage({ params }) {
                 <span className="text-sm font-medium">Map View</span>
               </button>
 
-              <SortSelect />
+              <SortSelect basePath={`/hotels/${citySlug}`} />
             </div>
           </div>
 
@@ -168,7 +184,10 @@ export default async function HotelsByCityPage({ params }) {
           <div className="flex gap-6">
             {/* LEFT FILTERS */}
             <aside className="hidden lg:block w-72 shrink-0">
-              <FiltersSidebar localities={localities} />
+              <FiltersSidebar
+                localities={localities}
+                basePath={`/hotels/${citySlug}`}
+              />
             </aside>
 
             {/* HOTEL LIST */}
@@ -224,7 +243,10 @@ export default async function HotelsByCityPage({ params }) {
             )}
           </article>
         </div>
-        <MobileSearchActions localities={localities} />
+        <MobileSearchActions
+          localities={localities}
+          basePath={`/hotels/${citySlug}`}
+        />
       </main>
 
       {/* -------- Breadcrumb Structured Data (SEO) -------- */}

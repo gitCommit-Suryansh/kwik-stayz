@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
-export default function FiltersSidebar({ isMobile = false }) {
+export default function FiltersSidebar({ isMobile = false, basePath = "/search" }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -103,7 +103,8 @@ export default function FiltersSidebar({ isMobile = false }) {
     if (filters.rating !== null) params.set("rating", filters.rating);
     else params.delete("rating");
 
-    router.push(`/search?${params.toString()}`);
+    router.push(`${basePath}?${params.toString()}`)
+
   };
 
   /* -----------------------------------------

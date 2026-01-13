@@ -8,6 +8,7 @@ import MobileSearchActions from "@/components/common/MobileSearchActions";
 import { SortSelect } from "@/components/common/SortModal";
 
 import { fetchHotelsByLocality } from "@/lib/hotels";
+import { fetchSearchResults } from "@/lib/hotels";
 import { getLocalitySeoContent } from "@/lib/seo/localitySeo";
 import { fetchLocalitiesByCity } from "@/lib/localities";
 import { generateFaqSchema } from "@/lib/seo/generateFaqSchema";
@@ -59,10 +60,24 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function HotelsByLocalityPage({ params }) {
+export default async function HotelsByLocalityPage({ params, searchParams }) {
   const { citySlug, localitySlug } = await params;
+  const { locality, category, priceMin, priceMax, amenities, rating, sort } =
+    await searchParams;
 
-  const data = await fetchHotelsByLocality(citySlug, localitySlug);
+  const query = {
+    city: citySlug,
+    locality: localitySlug,
+    category,
+    priceMin,
+    priceMax,
+    amenities,
+    rating,
+    sort,
+  };
+
+  const data = await fetchSearchResults(query);
+
   const localities = await fetchLocalitiesByCity(citySlug);
 
   if (!data) {
@@ -167,14 +182,17 @@ export default async function HotelsByLocalityPage({ params }) {
                 <span className="text-sm font-medium">Map View</span>
               </button>
 
-              <SortSelect />
+              <SortSelect basePath={`/hotels/${citySlug}/${localitySlug}`} />
             </div>
           </div>
 
           <div className="flex gap-6">
             {/* Filters */}
             <aside className="hidden lg:block w-72 shrink-0">
-              <FiltersSidebar localities={localities} />
+              <FiltersSidebar
+                localities={localities}
+                basePath={`/hotels/${citySlug}/${localitySlug}`}
+              />
             </aside>
 
             {/* Listings */}
@@ -226,7 +244,10 @@ export default async function HotelsByLocalityPage({ params }) {
             )}
           </article>
         </div>
-        <MobileSearchActions localities={localities} />
+        <MobileSearchActions
+          localities={localities}
+          basePath={`/hotels/${citySlug}/${localitySlug}`}
+        />
       </main>
 
       {/* ---------- ItemList Schema ---------- */}

@@ -17,7 +17,7 @@ const sortOptions = [
     "Guest Rating",
 ];
 
-export function SortSelect({ value, onChange }) {
+export function SortSelect({ value, onChange, basePath }) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -35,7 +35,7 @@ export function SortSelect({ value, onChange }) {
         if (value) params.set("sort", value);
         else params.delete("sort");
 
-        router.push(`/search?${params.toString()}`);
+        router.push(`${basePath}?${params.toString()}`);
     }
     return (
         <div className="hidden lg:flex items-center gap-2">
@@ -55,7 +55,7 @@ export function SortSelect({ value, onChange }) {
     );
 }
 
-export default function SortModal({ isOpen, onClose }) {
+export default function SortModal({ isOpen, onClose, basePath }) {
     if (!isOpen) return null;
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -75,7 +75,7 @@ export default function SortModal({ isOpen, onClose }) {
         if (value) params.set("sort", value);
         else params.delete("sort");
 
-        router.push(`/search?${params.toString()}`);
+        router.push(`${basePath}?${params.toString()}`);
         onClose();
     };
 
@@ -97,8 +97,8 @@ export default function SortModal({ isOpen, onClose }) {
                             key={option}
                             onClick={() => handleSort(option)}
                             className={`w-full text-left px-4 py-3 rounded-xl font-medium ${currentLabel === option
-                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                    : "hover:bg-gray-50"
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : "hover:bg-gray-50"
                                 }`}
                         >
                             {option}

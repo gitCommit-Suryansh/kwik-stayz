@@ -52,14 +52,14 @@ export default async function SearchPage({ searchParams }) {
           </div>
 
           {/* Sort */}
-          <SortSelect />
+          <SortSelect basePath="/search" />
         </div>
 
         {/* MAIN LAYOUT */}
         <div className="flex gap-6">
           {/* FILTERS */}
           <aside className="hidden lg:block w-72 shrink-0">
-            <FiltersSidebar localities={localities} />
+            <FiltersSidebar localities={localities} basePath="/search" />
           </aside>
 
           {/* HOTEL LIST */}
@@ -78,7 +78,7 @@ export default async function SearchPage({ searchParams }) {
           </section>
         </div>
       </div>
-      <MobileSearchActions localities={localities} />
+      <MobileSearchActions localities={localities} basePath="/search" />
     </main>
   );
 }

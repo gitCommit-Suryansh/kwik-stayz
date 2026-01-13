@@ -5,7 +5,7 @@ import { ArrowUpDown, SlidersHorizontal, X } from "lucide-react";
 import SortModal from "./SortModal";
 import FiltersSidebar from "../hotels/FiltersSidebar";
 
-export default function MobileSearchActions({ localities }) {
+export default function MobileSearchActions({ localities, basePath }) {
     const [activeModal, setActiveModal] = useState(null); // 'sort' | 'filters' | null
     const [currentSort, setCurrentSort] = useState("Popularity");
 
@@ -37,6 +37,7 @@ export default function MobileSearchActions({ localities }) {
                 onClose={closeModals}
                 currentSort={currentSort}
                 onSortChange={setCurrentSort}
+                basePath={basePath}
             />
 
             {/* Full Screen Filter Modal */}
@@ -57,7 +58,7 @@ export default function MobileSearchActions({ localities }) {
                 disable its internal sticky header or adjust styles if needed.
                 Currently, we just render it. 
              */}
-                        <FiltersSidebar localities={localities} isMobile={true} />
+                        <FiltersSidebar localities={localities} isMobile={true} basePath={basePath} />
                     </div>
 
                     {/* Bottom Action Footer (Optional Override) */}
