@@ -2,6 +2,7 @@
 
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
+import { revalidateTag } from "next/cache";
 
 import City from "@/models/City";
 import Locality from "@/models/Locality";
@@ -41,6 +42,7 @@ export async function POST(request) {
       nearbyPlaces,
       faqs,
       seo,
+      isHomeFeatured,
     } = body;
 
     /* ---------------- Basic Validation ---------------- */
@@ -122,9 +124,11 @@ export async function POST(request) {
       nearbyPlaces,
       faqs,
       seo,
+      isHomeFeatured,
 
       isActive: true,
     });
+    revalidateTag("home-hotels");
 
     return NextResponse.json(hotel, { status: 201 });
   } catch (error) {

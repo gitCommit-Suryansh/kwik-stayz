@@ -8,6 +8,7 @@ import Recommendations from "@/components/home/Recommendations";
 import Footer from "@/components/home/Footer";
 import HomeSearchSection from "@/components/home/HomeSearchSection";
 import { fetchHomeCities } from "@/lib/Home";
+import { fetchHomeHotels } from "@/lib/Home";
 
 // export const dynamic = "force-dynamic"; // Ensure fresh data if needed, or remove for static generation
 
@@ -22,6 +23,14 @@ export default async function App() {
       .slice(0, 10);
   }
 
+  const hotels = await fetchHomeHotels();
+  let hotelList = [];
+  if (hotels) {
+    // hotelList = hotels.filter((item) => item.isActive).slice(0, 4);
+    hotelList = hotels.slice(0, 4);
+  }
+  // console.log(hotelList);
+
   return (
     <div className="font-sans">
       <Navbar />
@@ -32,7 +41,7 @@ export default async function App() {
 
         <CityDestinations cities={cities} />
         <WhyChooseUs />
-        <Recommendations />
+        <Recommendations hotels={hotelList} />
       </main>
       <Footer />
       <BottomNav />

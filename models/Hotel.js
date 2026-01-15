@@ -171,6 +171,10 @@ const HotelSchema = new mongoose.Schema(
       description: String,
       canonical: String,
     },
+    isHomeFeatured: {
+      type: Boolean,
+      default: false,
+    },
 
     isActive: {
       type: Boolean,

@@ -8,9 +8,7 @@ export async function GET() {
   try {
     await connectDB();
 
-    const cities = await City.find({ isActive: true })
-      .sort({ name: 1 })
-      .lean();
+    const cities = await City.find({ isActive: true }).sort({ name: 1 }).lean();
 
     return NextResponse.json(cities, { status: 200 });
   } catch (error) {
