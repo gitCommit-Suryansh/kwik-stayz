@@ -58,8 +58,6 @@ export async function POST(request) {
       isActive: isActive !== undefined ? isActive : true,
     });
 
-    revalidateTag("home-cities");
-
     return NextResponse.json(newHomeCity, { status: 201 });
   } catch (error) {
     console.error("POST /api/home-cities error:", error);

@@ -10,7 +10,7 @@ import HomeSearchSection from "@/components/home/HomeSearchSection";
 import { fetchHomeCities } from "@/lib/Home";
 import { fetchHomeHotels } from "@/lib/Home";
 
-// export const dynamic = "force-dynamic"; // Ensure fresh data if needed, or remove for static generation
+export const dynamic = "force-dynamic"; // Ensure fresh data if needed, or remove for static generation
 
 export default async function App() {
   // Server-side data fetching
