@@ -2,23 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { format } from "date-fns";
 import {
   Loader2,
-  CheckCircle,
-  MapPin,
-  Calendar,
-  Users,
-  CreditCard,
-  Phone,
-  Mail,
-  Home,
+  ChevronLeft,
   ChevronRight,
+  MapPin,
   Printer,
-  Share2,
-  XCircle,
-  Clock,
-  AlertCircle,
+  Phone,
 } from "lucide-react";
 
 export default function BookingDetailsPage() {
@@ -65,340 +57,310 @@ export default function BookingDetailsPage() {
     stay,
     guestDetails,
     pricing,
+    roomType,
     status,
-    paymentId,
     createdAt,
   } = booking;
 
-  const statusConfig = {
-    CONFIRMED: {
-      label: "Booking Confirmed",
-      bgClass: "bg-green-600",
-      icon: CheckCircle,
-      iconColor: "text-green-200",
-      subText: "text-green-100",
-      pillClass: "bg-green-700/50",
-    },
-    PENDING_PAYMENT: {
-      label: "Payment Pending",
-      bgClass: "bg-orange-500",
-      icon: Clock,
-      iconColor: "text-orange-100",
-      subText: "text-orange-50",
-      pillClass: "bg-orange-600/50",
-    },
-    PAYMENT_FAILED: {
-      label: "Payment Failed",
-      bgClass: "bg-red-600",
-      icon: XCircle,
-      iconColor: "text-red-200",
-      subText: "text-red-100",
-      pillClass: "bg-red-700/50",
-    },
-    CANCELLED: {
-      label: "Booking Cancelled",
-      bgClass: "bg-gray-600",
-      icon: XCircle,
-      iconColor: "text-gray-300",
-      subText: "text-gray-200",
-      pillClass: "bg-gray-700/50",
-    },
-    EXPIRED: {
-      label: "Booking Expired",
-      bgClass: "bg-gray-500",
-      icon: AlertCircle,
-      iconColor: "text-gray-300",
-      subText: "text-gray-200",
-      pillClass: "bg-gray-600/50",
-    },
+  // Formatting
+  const checkInDate = stay.checkIn ? new Date(stay.checkIn) : null;
+  const checkOutDate = stay.checkOut ? new Date(stay.checkOut) : null;
+
+  const checkInDay = checkInDate ? format(checkInDate, "EEE, d MMM") : "";
+  const checkOutDay = checkOutDate ? format(checkOutDate, "EEE, d MMM") : "";
+  const nights = stay.nights;
+
+  // Status Configuration
+  const getStatusConfig = (status) => {
+    switch (status) {
+      case "CONFIRMED":
+        return {
+          title: "Booking Confirmed",
+          message: "We hope you enjoy your stay!",
+          colorClass: "bg-[#43A047]", // Green
+          showBanner: true,
+          showFooter: true,
+        };
+      case "PAYMENT_FAILED":
+        return {
+          title: "Payment Failed",
+          message: "Your payment could not be processed.",
+          colorClass: "bg-[#E53935]", // Red
+          showBanner: false,
+          showFooter: false,
+        };
+      case "PENDING_PAYMENT":
+        return {
+          title: "Payment Pending",
+          message: "Please complete your payment to confirm.",
+          colorClass: "bg-[#F57C00]", // Orange
+          showBanner: true,
+          showFooter: false,
+        };
+      case "CANCELLED":
+        return {
+          title: "Booking Cancelled",
+          message: "This booking has been cancelled.",
+          colorClass: "bg-gray-700",
+          showBanner: false,
+          showFooter: false,
+        };
+      case "CHECKED_IN":
+        return {
+          title: "Checked In",
+          message: "Enjoy your stay!",
+          colorClass: "bg-[#43A047]",
+          showBanner: true,
+          showFooter: true,
+        };
+      case "COMPLETED":
+        return {
+          title: "Stay Completed",
+          message: "Hope you had a great time!",
+          colorClass: "bg-blue-600",
+          showBanner: false,
+          showFooter: true,
+        };
+      default:
+        return {
+          title: "Booking Status: " + status,
+          message: "Check details below.",
+          colorClass: "bg-[#E53935]",
+          showBanner: true,
+          showFooter: true,
+        };
+    }
   };
 
-  const currentStatus = statusConfig[status] || statusConfig.EXPIRED;
-  const StatusIcon = currentStatus.icon;
+  const statusConfig = getStatusConfig(status);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-12">
-      <main className="max-w-3xl mx-auto px-4 py-8">
-        {/* Dynamic Status Banner */}
-        <div
-          className={`${currentStatus.bgClass} text-white rounded-2xl p-6 shadow-lg mb-6 relative overflow-visible transition-colors duration-300`}
-        >
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <StatusIcon className={currentStatus.iconColor} size={24} />
-                <h1 className="text-2xl font-bold">{currentStatus.label}</h1>
-              </div>
-              <p className={currentStatus.subText}>
-                Your booking ID is{" "}
-                <span
-                  className={`font-mono font-bold px-2 py-0.5 rounded ${currentStatus.pillClass}`}
-                >
-                  {bookingCode}
+    <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-12">
+      {/* 1. Header Section (Dynamic Color) */}
+      <div
+        className={`${statusConfig.colorClass} text-white px-4 pt-4 pb-6 sticky top-0 z-10 shadow-md transition-colors duration-300`}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            <button
+              onClick={() => router.push("/my-bookings")}
+              className="mr-4 hover:bg-white/20 p-1 rounded-full transition-colors"
+            >
+              <ChevronLeft size={28} />
+            </button>
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm font-medium opacity-95 tracking-wide">
+              KwikStayz Welcomes you
+            </p>
+          </div>
+
+          {/* Print Button */}
+          <button
+            onClick={() => window.print()}
+            className="hover:bg-white/20 p-2 rounded-full transition-colors"
+            title="Print Booking"
+          >
+            <Printer size={24} />
+          </button>
+        </div>
+
+        <div className="text-center mt-2">
+          <h1 className="text-2xl font-bold mb-1 uppercase tracking-tight">
+            {statusConfig.title}
+          </h1>
+          <p className="text-sm opacity-90 mb-2 font-medium">
+            {statusConfig.message}
+          </p>
+
+          <div className="flex flex-col items-center justify-center opacity-80 gap-0.5">
+            <p className="text-xs font-mono tracking-wide font-bold">
+              ID: {bookingCode}
+            </p>
+            {createdAt && (
+              <p className="text-[10px]">
+                Booked on {format(new Date(createdAt), "dd MMM yyyy")}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-xl mx-auto -mt-4 bg-white rounded-t-3xl min-h-screen px-5 pt-6 pb-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] relative z-20">
+        {/* 2. Savings Banner (Conditional) */}
+        {statusConfig.showBanner && (
+          <div className="bg-[#43A047] text-white p-4 rounded-xl flex justify-between items-center mb-8 shadow-sm cursor-pointer hover:bg-[#388E3C] transition-colors">
+            <p className="font-medium text-sm">
+              Want to save more on this booking?
+            </p>
+            <ChevronRight size={20} />
+          </div>
+        )}
+
+        {/* 3. Guest & Dates (Centered) */}
+        <div className="text-center mb-8 border-b border-gray-100 pb-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-3">
+            {guestDetails.fullName.toUpperCase()}
+          </h2>
+          <div className="flex items-center justify-center gap-4 text-sm text-gray-700">
+            <span className="font-medium">{checkInDay}</span>
+            <span className="bg-gray-100 px-3 py-1 rounded-full text-xs text-gray-600 font-bold border border-gray-200">
+              {nights} Night{nights > 1 ? "s" : ""}
+            </span>
+            <span className="font-medium">{checkOutDay}</span>
+          </div>
+        </div>
+
+        {/* 4. Hotel Info Split */}
+        <div className="flex gap-4 mb-8">
+          <div className="flex-1">
+            <Link href={`/hotels/${hotel._id || "#"}`}>
+              <h3 className="text-lg font-bold text-gray-900 leading-tight mb-2 hover:text-[#E53935] hover:underline transition-colors cursor-pointer">
+                {hotel.name}
+              </h3>
+            </Link>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              {hotel.address}
+            </p>
+          </div>
+          {hotel.image && (
+            <div className="w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-gray-200 shadow-sm">
+              <img
+                src={hotel.image}
+                alt={hotel.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* 5. 3-Column Grid Details */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          {/* Guests */}
+          <div className="bg-gray-50 p-4 rounded-xl text-left border border-gray-100 flex flex-col justify-between">
+            <p className="text-[10px] font-bold text-[#E53935] uppercase tracking-wide mb-1">
+              GUESTS
+            </p>
+            <p className="text-lg font-bold text-gray-900 leading-none">
+              {booking.rooms.reduce((acc, r) => acc + r.guests, 0)}
+            </p>
+          </div>
+          {/* Rooms */}
+          <div className="bg-gray-50 p-4 rounded-xl text-left border border-gray-100 flex flex-col justify-between">
+            <p className="text-[10px] font-bold text-[#E53935] uppercase tracking-wide mb-1">
+              ROOMS
+            </p>
+            <div className="leading-none">
+              <span className="text-lg font-bold text-gray-900 block">
+                {booking.rooms.length}
+              </span>
+              <span className="text-[10px] text-gray-500 font-medium truncate block max-w-full">
+                {roomType?.name || "Standard"}
+              </span>
+            </div>
+          </div>
+          {/* Price */}
+          <div className="bg-gray-50 p-4 rounded-xl text-left border border-gray-100 flex flex-col justify-between">
+            <p className="text-[10px] font-bold text-[#E53935] uppercase tracking-wide mb-1">
+              PRICE
+            </p>
+            <div className="leading-none">
+              <p className="text-lg font-bold text-gray-900">
+                ₹ {pricing.totalPrice.toLocaleString()}
+              </p>
+
+              {status === "PAYMENT_FAILED" ? (
+                <span className="text-[9px] font-bold uppercase tracking-wider text-red-600">
+                  Failed
                 </span>
-              </p>
-            </div>
-
-            <div className="flex flex-col md:items-end gap-2 text-right">
-              <div className="flex gap-2">
-                <button
-                  onClick={() => window.print()}
-                  className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white"
-                  title="Print Booking"
+              ) : (
+                <span
+                  className={`text-[9px] font-bold uppercase tracking-wider ${
+                    status === "CONFIRMED"
+                      ? "text-green-600"
+                      : "text-orange-600"
+                  }`}
                 >
-                  <Printer size={18} />
-                </button>
-                <button className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white">
-                  <Share2 size={18} />
-                </button>
-                <button
-                  onClick={() => router.push("/")}
-                  className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white"
-                  title="Home"
-                >
-                  <Home size={18} />
-                </button>
-              </div>
-              <div className="text-right">
-                <p className={`text-sm ${currentStatus.subText}`}>Booked on</p>
-                <p className="font-medium">
-                  {format(new Date(createdAt), "dd MMM yyyy, hh:mm a")}
-                </p>
-              </div>
-            </div>
-          </div>
-          {/* Decorative Circles */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-32 blur-2xl pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full -ml-16 -mb-16 blur-2xl pointer-events-none"></div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* LEFT COLUMN - MAIN DETAILS */}
-          <div className="md:col-span-2 space-y-6">
-            {/* Hotel Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              {hotel.image && (
-                <div className="h-48 w-full overflow-hidden">
-                  <img
-                    src={hotel.image}
-                    alt={hotel.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                  {status === "CONFIRMED" ? "Prepaid" : "Pay at Hotel"}
+                </span>
               )}
-              <div className="p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-2">
-                  {hotel.name}
-                </h2>
-                <div className="flex items-start gap-2 text-gray-600 text-sm mb-4">
-                  <MapPin size={16} className="mt-0.5 shrink-0" />
-                  <p>
-                    {hotel.address}, {hotel.city}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 text-blue-600 font-medium text-sm bg-blue-50 px-3 py-2 rounded-lg w-fit">
-                  <Home size={16} />
-                  {booking.roomType.name}
-                </div>
-              </div>
-            </div>
-
-            {/* Stay Details */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Calendar className="text-[#f8a11e]" size={20} />
-                Stay Details
-              </h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                  <p className="text-xs text-gray-500 uppercase font-semibold mb-1">
-                    Check-in
-                  </p>
-                  <p className="font-bold text-gray-900 text-lg">
-                    {format(new Date(stay.checkIn), "dd MMM")}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {format(new Date(stay.checkIn), "yyyy")}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">12:00 PM</p>
-                </div>
-                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                  <p className="text-xs text-gray-500 uppercase font-semibold mb-1">
-                    Check-out
-                  </p>
-                  <p className="font-bold text-gray-900 text-lg">
-                    {format(new Date(stay.checkOut), "dd MMM")}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {format(new Date(stay.checkOut), "yyyy")}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">11:00 AM</p>
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between text-sm text-gray-600 bg-gray-50 px-4 py-3 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{stay.nights} Night(s)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">
-                    {booking.rooms.length} Room(s)
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Guest Details */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Users className="text-[#f8a11e]" size={20} />
-                Guest Information
-              </h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                    <Users size={20} />
-                  </div>
-                  <div>
-                    <p className="font-bold text-gray-900">
-                      {guestDetails.fullName}
-                    </p>
-                    <p className="text-xs text-gray-500">Primary Guest</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                    <Mail size={20} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      {guestDetails.email}
-                    </p>
-                    <p className="text-xs text-gray-500">Email Address</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                    <Phone size={20} />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      +91 {guestDetails.mobile}
-                    </p>
-                    <p className="text-xs text-gray-500">Mobile Number</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT COLUMN - PRICE & PAYMENT */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <CreditCard className="text-[#f8a11e]" size={20} />
-                Payment Summary
-              </h3>
-
-              <div className="space-y-3 text-sm text-gray-600 mb-6">
-                <div className="flex justify-between">
-                  <span>Base Price</span>
-                  <span>₹{pricing.basePriceTotal.toLocaleString()}</span>
-                </div>
-                {pricing.totalExtraGuestCost > 0 && (
-                  <div className="flex justify-between">
-                    <span>Extra Guest Charges</span>
-                    <span>₹{pricing.totalExtraGuestCost.toLocaleString()}</span>
-                  </div>
-                )}
-                <div className="flex justify-between font-medium text-green-600">
-                  <span>Taxes & Fees</span>
-                  <span>Included</span>
-                </div>
-                <div className="border-t border-dashed border-gray-200 my-2"></div>
-                <div className="flex justify-between items-center text-gray-900 text-lg font-bold">
-                  <span>Total Paid</span>
-                  <span>₹{pricing.totalPrice.toLocaleString()}</span>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>Payment Status</span>
-                  <span
-                    className={`font-bold ${
-                      status === "CONFIRMED"
-                        ? "text-green-600"
-                        : "text-orange-500"
-                    }`}
-                  >
-                    {status === "CONFIRMED" ? "PAID" : status}
-                  </span>
-                </div>
-                {paymentId?.transactionId && (
-                  <div className="flex flex-col gap-1 text-xs text-gray-500">
-                    <span>Transaction ID</span>
-                    <span className="font-mono text-gray-900 break-all">
-                      {paymentId.transactionId}
-                    </span>
-                  </div>
-                )}
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>Payment Method</span>
-                  <span className="font-medium text-gray-900">
-                    PhonePe / UPI
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-6 text-center">
-                <button
-                  onClick={() => router.push("/")}
-                  className="text-[#f8a11e] font-bold text-sm hover:underline flex items-center justify-center gap-1 mx-auto"
-                >
-                  Book Another Stay <ChevronRight size={14} />
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
-              <h4 className="font-bold text-blue-900 mb-2">Need Help?</h4>
-              <p className="text-sm text-blue-700 mb-4">
-                If you have any issues with your booking, feel free to contact
-                our support team.
-              </p>
-              <button className="w-full bg-white text-blue-600 font-bold py-2 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors text-sm">
-                Contact Support
-              </button>
             </div>
           </div>
         </div>
-      </main>
+
+        {/* 6. Address Section */}
+        <div className="flex items-start gap-3 border-t border-gray-100 pt-6 mb-6">
+          <MapPin className="mt-1 text-[#E53935] shrink-0" size={20} />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-800 leading-relaxed mb-2">
+              {hotel.name}, {hotel.address}, {hotel.city}
+            </p>
+            <div className="flex justify-between items-center">
+              <p className="text-xs text-gray-500">{hotel.locality}</p>
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                  hotel.name + " " + hotel.address
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-bold text-[#E53935] hover:underline"
+              >
+                Get Directions
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Contact / Help Section */}
+        <div className="flex items-center gap-3 border-t border-gray-100 pt-6">
+          <div className="bg-blue-50 p-2 rounded-full text-blue-600">
+            <Phone size={20} />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-gray-900">
+              Need help with your booking?
+            </p>
+            <p className="text-xs text-gray-500">Call our 24/7 support line</p>
+          </div>
+          <a
+            href="tel:+911234567890"
+            className="ml-auto text-xs font-bold bg-white border border-gray-200 px-3 py-1.5 rounded-full hover:bg-gray-50 transition-colors"
+          >
+            Call Now
+          </a>
+        </div>
+
+        {/* Footer Question (Conditional) */}
+        {statusConfig.showFooter && (
+          <div className="mt-12 text-center border-t border-gray-100 pt-6">
+            <p className="font-bold text-gray-900 text-sm">
+              Was the check-in at KwikStayz smooth for you?
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 function LoadingState() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <Loader2 className="w-8 h-8 text-[#f8a11e] animate-spin mx-auto mb-4" />
-        <p className="text-gray-500 font-medium">Loading details...</p>
-      </div>
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <Loader2 className="w-8 h-8 text-[#E53935] animate-spin" />
     </div>
   );
 }
 
 function ErrorState({ message, onHome }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-lg text-center max-w-md">
-        <h2 className="text-xl font-bold text-red-600 mb-2">
-          Error Loading Booking
-        </h2>
-        <p className="text-gray-600 mb-6">{message}</p>
+    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="text-center">
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Error</h2>
+        <p className="text-gray-500 mb-6">{message}</p>
         <button
           onClick={onHome}
-          className="bg-gray-900 text-white px-6 py-2 rounded-lg font-bold"
+          className="text-[#E53935] font-bold hover:underline"
         >
           Go Home
         </button>
