@@ -1,6 +1,69 @@
-import { Star, Wifi, Utensils, MapPin, Users, Sparkles } from "lucide-react";
+"use client";
+
+import { Star, MapPin, Users, Heart } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import CategoryBadge from "@/components/hotel/CategoryBadge";
+import { getAmenityIcon } from "@/components/hotel/amenityUtils";
 
 export default function HotelCard({ hotel }) {
+  const { user, setUser } = useAuth(); // Need setUser to update local context if needed, or just rely on API
+  const router = useRouter();
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Sync wishlist state from user context
+  useEffect(() => {
+    if (user && user.wishlist) {
+      setIsWishlisted(user.wishlist.includes(hotel._id));
+    } else {
+      setIsWishlisted(false);
+    }
+  }, [user, hotel._id]);
+
+  const toggleWishlist = async (e) => {
+    e.preventDefault(); // Prevent navigating to hotel page
+    e.stopPropagation();
+
+    if (!user) {
+      router.push("/auth/login");
+      return;
+    }
+
+    if (isLoading) return;
+    setIsLoading(true);
+
+    // Optimistic update
+    const previousState = isWishlisted;
+    setIsWishlisted(!previousState);
+
+    try {
+      const res = await fetch("/api/user/wishlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hotelId: hotel._id }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to toggle wishlist");
+
+      // Update user context with new wishlist (optional but good for consistency)
+      // setUser({ ...user, wishlist: data.wishlist }); 
+      // Actually AuthContext setUser might not persist deep merge well without full re-fetch or manual merge
+      // For now, local state visual feedback is enough, but updating context helps other components
+      if (data.wishlist) {
+        setUser(prev => ({ ...prev, wishlist: data.wishlist }));
+      }
+
+    } catch (error) {
+      console.error("Wishlist error:", error);
+      setIsWishlisted(previousState); // Revert on error
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Calculate discount percentage (mock - you can pass real data)
   const originalPrice = Math.round(hotel.priceStartingFrom * 1.3);
   const discount = Math.round(((originalPrice - hotel.priceStartingFrom) / originalPrice) * 100);
@@ -23,9 +86,18 @@ export default function HotelCard({ hotel }) {
           />
 
           {/* Company-Serviced Badge */}
-          <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5">
-            <Sparkles size={14} className="text-emerald-600" />
-            <span className="text-xs font-semibold text-gray-800">Premium Stay</span>
+          <div className="absolute top-3 left-3">
+            <CategoryBadge categories={hotel.categories} />
+          </div>
+
+          {/* Wishlist Heart Desktop */}
+          <div className="absolute top-3 right-3 z-10">
+            <div className="bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-sm cursor-pointer hover:scale-110 transition-transform" onClick={toggleWishlist}>
+              <Heart
+                size={16}
+                className={`transition-colors ${isWishlisted ? "fill-rose-500 text-rose-500" : "text-gray-400"}`}
+              />
+            </div>
           </div>
 
           {/* Recent Bookings Badge */}
@@ -78,26 +150,14 @@ export default function HotelCard({ hotel }) {
             {/* Amenities */}
             <div className="flex items-center gap-2 mt-3 flex-wrap">
               {hotel.hotelAmenities.slice(0, 3).map((amenity, idx) => {
-                // Icon mapping
-                const getAmenityIcon = (amenity) => {
-                  const lowerAmenity = amenity.toLowerCase();
-                  if (lowerAmenity.includes('wifi') || lowerAmenity.includes('internet')) {
-                    return <Wifi size={13} className="text-emerald-600" />;
-                  }
-                  if (lowerAmenity.includes('food') || lowerAmenity.includes('restaurant')) {
-                    return <Utensils size={13} className="text-emerald-600" />;
-                  }
-                  return null;
-                };
-
-                const icon = getAmenityIcon(amenity);
+                const IconComponent = getAmenityIcon(amenity);
 
                 return (
                   <div
                     key={idx}
                     className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1.5 rounded-lg border border-gray-100"
                   >
-                    {icon}
+                    <IconComponent size={13} className="text-emerald-600" />
                     <span className="text-xs font-medium text-gray-700">{amenity}</span>
                   </div>
                 );
@@ -155,19 +215,16 @@ export default function HotelCard({ hotel }) {
 
           {/* Top Left Badges */}
           <div className="absolute top-2 left-2 flex flex-col gap-1 items-start">
-            {/* Featured / Premium Badge */}
-            {(hotel.rating >= 4.0) && (
-              <span className="bg-yellow-400 text-black text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm shadow-sm tracking-wide">
-                Gold
-              </span>
-            )}
+            <CategoryBadge categories={hotel.categories} />
           </div>
 
-          {/* Top Right Badges */}
+          {/* Top Right Badges (Wishlist) */}
           <div className="absolute top-2 right-2">
-            <div className="bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-sm">
-              {/* Heart Icon placeholder or similar */}
-              <Sparkles size={14} className="text-gray-400" />
+            <div className="bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-sm active:scale-95 transition-transform" onClick={toggleWishlist}>
+              <Heart
+                size={16}
+                className={`transition-colors ${isWishlisted ? "fill-rose-500 text-rose-500" : "text-gray-400"}`}
+              />
             </div>
           </div>
 
@@ -226,9 +283,8 @@ export default function HotelCard({ hotel }) {
 
           <div className="flex items-center justify-between mt-1">
             <p className="text-[10px] text-gray-400">
-              + ₹98 taxes & fees
+              Includes taxes & fees
             </p>
-            {/* OYO usually doesn't have a big button on the card, but maybe 'View' */}
           </div>
         </div>
       </a>

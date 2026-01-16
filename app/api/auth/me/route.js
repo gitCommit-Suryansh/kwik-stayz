@@ -16,7 +16,7 @@ export async function GET(req) {
     const decoded = verifyToken(token);
 
     const user = await User.findById(decoded.userId)
-      .select("name email avatar provider")
+      .select("name email avatar provider wishlist")
       .lean();
 
     if (!user) {

@@ -20,6 +20,8 @@ import {
     User,
 } from "lucide-react";
 
+import Navbar from "@/components/home/Navbar";
+
 export default function MyBookingsPage() {
     const router = useRouter();
     const [bookings, setBookings] = useState([]);
@@ -58,8 +60,13 @@ export default function MyBookingsPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
-            {/* Header */}
-            <div className="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
+            {/* Desktop Navbar */}
+            <div className="hidden md:block">
+                <Navbar />
+            </div>
+
+            {/* Mobile Header */}
+            <div className="md:hidden bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
                 <div className="max-w-4xl mx-auto px-4 h-14 flex items-center relative justify-center">
                     <button
                         onClick={() => router.back()}
@@ -73,10 +80,10 @@ export default function MyBookingsPage() {
                 </div>
             </div>
 
-            <main className="max-w-7xl mx-auto px-0 md:px-4 py-4 md:py-6">
+            <main className="max-w-7xl mx-auto px-0 md:px-4 py-4 md:py-6 md:pt-32">
                 {/* PREVIOUS BOOKINGS HEADER */}
                 <div className="px-4 md:px-0 mb-4">
-                    <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    <h2 className="text-xl font-bold text-gray-800">
                         Your Bookings ({bookings.length})
                     </h2>
                 </div>
@@ -134,8 +141,8 @@ function BottomNav() {
                         <item.icon
                             size={24}
                             className={`transition-colors ${activeTab === item.name
-                                    ? "text-red-500" // Active color from OYO image
-                                    : "text-gray-500"
+                                ? "text-red-500" // Active color from OYO image
+                                : "text-gray-500"
                                 }`}
                         />
                         <span

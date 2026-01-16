@@ -114,8 +114,9 @@ export async function GET(req) {
       .sort(sortQuery)
       .populate("city", "name slug")
       .populate("locality", "name slug")
+      .populate("categories", "name slug")
       .select(
-        "name slug heroImage rating reviewCount priceStartingFrom hotelAmenities locality city"
+        "name slug heroImage rating reviewCount priceStartingFrom hotelAmenities locality city categories"
       )
       .lean();
 

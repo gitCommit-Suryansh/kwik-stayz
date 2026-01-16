@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Search, Calendar, Users, ArrowLeft } from "lucide-react";
+import { Search, Calendar, Users, ArrowLeft, ChevronLeft, Minus, Plus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { useSearchSuggestions } from "@/lib/search/useSearchSuggestions";
@@ -43,6 +43,9 @@ export default function SearchBar({ city }) {
     const cityParam = searchParams.get("city");
     const localityParam = searchParams.get("locality");
     const categoryParam = searchParams.get("category");
+    const checkInParam = searchParams.get("checkIn");
+    const checkOutParam = searchParams.get("checkOut");
+    const guestsParam = searchParams.get("guests");
 
     if (cityParam) {
       setSelectedCitySlug(cityParam);
@@ -63,6 +66,18 @@ export default function SearchBar({ city }) {
 
     if (categoryParam) {
       setCategory(categoryParam);
+    }
+
+    if (checkInParam) {
+      setCheckIn(checkInParam);
+    }
+
+    if (checkOutParam) {
+      setCheckOut(checkOutParam);
+    }
+
+    if (guestsParam) {
+      setGuests(Number(guestsParam));
     }
   }, [searchParams]);
 
@@ -94,6 +109,13 @@ export default function SearchBar({ city }) {
   }, []);
 
 
+
+  // Helper for formatting dates in mobile strip
+  const getDisplayDate = (dateStr, offsetDays = 0) => {
+    const d = dateStr ? new Date(dateStr) : new Date();
+    if (!dateStr) d.setDate(d.getDate() + offsetDays);
+    return d.toLocaleDateString("en-GB", { weekday: 'short', day: '2-digit', month: 'short' });
+  };
 
 
   return (
@@ -164,7 +186,7 @@ export default function SearchBar({ city }) {
                 {/* Guests */}
                 <div className="flex-1 flex items-center justify-center gap-2 px-3 h-full border-r border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors relative group">
                   <div className="text-sm font-medium text-gray-900 truncate">
-                    1 Room, 2 Guests
+                    1 Room, {guests} Guest{guests > 1 ? 's' : ''}
                   </div>
                 </div>
 
@@ -359,34 +381,58 @@ export default function SearchBar({ city }) {
               <div className="p-4 space-y-4 overflow-y-auto">
                 {/* Dates Row */}
                 <div className="flex gap-3">
-                  <div className="flex-1 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Calendar className="w-3.5 h-3.5 text-gray-400" />
-                      <span className="text-xs font-medium text-gray-500">Check-in</span>
-                    </div>
-                    <div className="text-sm font-semibold text-gray-900">Today</div>
+                  <div className="flex-1 relative">
+                    <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                      Check-in
+                    </label>
+                    <input
+                      type="date"
+                      value={checkIn}
+                      onChange={(e) => setCheckIn(e.target.value)}
+                      className="w-full text-sm font-semibold text-gray-900 border-b border-gray-200 pb-2 focus:border-[#f8a11e] focus:outline-none rounded-none bg-transparent"
+                    />
                   </div>
-                  <div className="flex-1 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Calendar className="w-3.5 h-3.5 text-gray-400" />
-                      <span className="text-xs font-medium text-gray-500">Check-out</span>
-                    </div>
-                    <div className="text-sm font-semibold text-gray-900">Tomorrow</div>
+                  <div className="flex-1 relative">
+                    <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                      Check-out
+                    </label>
+                    <input
+                      type="date"
+                      value={checkOut}
+                      onChange={(e) => setCheckOut(e.target.value)}
+                      className="w-full text-sm font-semibold text-gray-900 border-b border-gray-200 pb-2 focus:border-[#f8a11e] focus:outline-none rounded-none bg-transparent"
+                    />
                   </div>
                 </div>
 
                 {/* Guests Row */}
-                <div className="p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-full text-gray-400">
-                      <Users className="w-4 h-4" />
+                <div className="mb-4">
+                  <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                    Guests
+                  </label>
+                  <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                    <div className="flex items-center gap-2">
+                      <Users className="text-gray-400 w-5 h-5" />
+                      <span className="text-md font-semibold text-gray-900">
+                        {guests} Guest{guests > 1 ? 's' : ''}
+                      </span>
                     </div>
-                    <div>
-                      <div className="text-xs font-medium text-gray-500">Guests</div>
-                      <div className="text-sm font-semibold text-gray-900">2 Guests, 1 Room</div>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setGuests(Math.max(1, guests - 1))}
+                        className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={guests <= 1}
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setGuests(guests + 1)}
+                        className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
-                  <button className="text-xs font-bold text-emerald-600 uppercase">Edit</button>
                 </div>
 
                 {/* Categories */}
@@ -426,13 +472,10 @@ export default function SearchBar({ city }) {
                       params.set("category", category);
                     }
 
-                    const checkinParam = searchParams.get("checkin");
-                    const checkoutParam = searchParams.get("checkout");
-                    const guestsParam = searchParams.get("guests");
-
-                    if (checkinParam) params.set("checkin", checkinParam);
-                    if (checkoutParam) params.set("checkout", checkoutParam);
-                    if (guestsParam) params.set("guests", guestsParam);
+                    // Use state values, not URL params
+                    if (checkIn) params.set("checkin", checkIn);
+                    if (checkOut) params.set("checkout", checkOut);
+                    if (guests) params.set("guests", guests);
 
 
                     router.push(`/search?${params.toString()}`);
@@ -456,8 +499,15 @@ export default function SearchBar({ city }) {
                 onClick={() => setIsMobileEditMode(true)}
                 className="flex items-center gap-3 bg-gray-100/80 rounded-md px-3 py-2.5 border border-gray-200 shadow-sm active:bg-gray-200 transition-colors cursor-pointer"
               >
-                {/* Back Arrow or Search Icon */}
-                <Search className="w-4 h-4 text-gray-500" />
+                {/* Back Arrow with ChevronLeft */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.back();
+                  }}
+                  className="text-gray-500">
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
 
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-bold text-gray-900 truncate">
@@ -476,7 +526,7 @@ export default function SearchBar({ city }) {
                       : "Today - Tomorrow"}
                     </span>
                     <span className="w-0.5 h-0.5 rounded-full bg-gray-400" />
-                    <span>1 Room, 2 Guests</span>
+                    <span>1 Room, {guests} Guest{guests > 1 ? 's' : ''}</span>
                   </div>
                 </div>
 
@@ -493,19 +543,19 @@ export default function SearchBar({ city }) {
             <div className="flex items-center justify-between px-4 py-2.5 bg-white border-t border-gray-100 shadow-sm text-xs font-medium text-gray-600">
               <div className="flex text-center w-full">
                 <div className="flex-1 flex flex-col items-center border-r border-gray-100">
-                  <span className="text-emerald-600 font-bold">Sat, 03 Jan</span>
+                  <span className="text-emerald-600 font-bold">{getDisplayDate(checkIn, 0)}</span>
                   <span className="text-[10px] text-gray-400">12:00 PM</span>
                 </div>
                 <div className="px-3 flex items-center justify-center">
                   <span className="bg-gray-100 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold text-gray-500">1N</span>
                 </div>
                 <div className="flex-1 flex flex-col items-center border-r border-gray-100">
-                  <span className="text-rose-500 font-bold">Sun, 04 Jan</span>
+                  <span className="text-rose-500 font-bold">{getDisplayDate(checkOut, 1)}</span>
                   <span className="text-[10px] text-gray-400">11:00 AM</span>
                 </div>
                 <div className="flex-1 flex flex-col items-center">
                   <span className="text-gray-800 font-bold">1 Room</span>
-                  <span className="text-[10px] text-gray-400">2 Guests</span>
+                  <span className="text-[10px] text-gray-400">{guests} Guest{guests > 1 ? 's' : ''}</span>
                 </div>
               </div>
             </div>

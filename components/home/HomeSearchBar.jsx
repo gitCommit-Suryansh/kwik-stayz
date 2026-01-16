@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, forwardRef } from "react";
-import { Search, Calendar, Users, MapPin } from "lucide-react";
+import { Search, Calendar, Users, MapPin, Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSearchSuggestions } from "@/lib/search/useSearchSuggestions";
 import SearchSuggestions from "@/components/search/SearchSuggestions";
@@ -138,39 +138,59 @@ const HomeSearchBar = forwardRef((props, ref) => {
                         </div>
 
                         <div className="flex gap-4 mb-4">
-                            {/* Date */}
-                            <div className="flex-1">
+                            {/* Check-in */}
+                            <div className="flex-1 relative">
                                 <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
-                                    Date
+                                    Check-in
                                 </label>
-                                <div className="flex items-center gap-2 border-b border-gray-200 pb-2">
-                                    <span className="text-sm font-semibold text-gray-900 whitespace-nowrap">
-                                        {checkIn
-                                            ? new Date(checkIn).toLocaleDateString("en-GB", {
-                                                day: "2-digit",
-                                                month: "short",
-                                            })
-                                            : "Today"}
-                                        {" - "}
-                                        {checkOut
-                                            ? new Date(checkOut).toLocaleDateString("en-GB", {
-                                                day: "2-digit",
-                                                month: "short",
-                                            })
-                                            : "Tomorrow"}
-                                    </span>
-                                </div>
+                                <input
+                                    type="date"
+                                    value={checkIn}
+                                    onChange={(e) => setCheckIn(e.target.value)}
+                                    className="w-full text-sm font-semibold text-gray-900 border-b border-gray-200 pb-2 focus:border-[#f8a11e] focus:outline-none rounded-none bg-transparent"
+                                />
                             </div>
 
-                            {/* Guests */}
-                            <div className="flex-1">
+                            {/* Check-out */}
+                            <div className="flex-1 relative">
                                 <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
-                                    Guests
+                                    Check-out
                                 </label>
-                                <div className="flex items-center gap-2 border-b border-gray-200 pb-2">
-                                    <span className="text-sm font-semibold text-gray-900">
-                                        1 Room, {guests} Guests
+                                <input
+                                    type="date"
+                                    value={checkOut}
+                                    onChange={(e) => setCheckOut(e.target.value)}
+                                    className="w-full text-sm font-semibold text-gray-900 border-b border-gray-200 pb-2 focus:border-[#f8a11e] focus:outline-none rounded-none bg-transparent"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Guests Row */}
+                        <div className="mb-4">
+                            <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                                Guests
+                            </label>
+                            <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                                <div className="flex items-center gap-2">
+                                    <Users className="text-gray-400 w-5 h-5" />
+                                    <span className="text-md font-semibold text-gray-900">
+                                        {guests} Guest{guests > 1 ? 's' : ''}
                                     </span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => setGuests(Math.max(1, guests - 1))}
+                                        className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled={guests <= 1}
+                                    >
+                                        <Minus className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={() => setGuests(guests + 1)}
+                                        className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                    </button>
                                 </div>
                             </div>
                         </div>

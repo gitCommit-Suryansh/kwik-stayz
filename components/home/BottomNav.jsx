@@ -7,10 +7,10 @@ const BottomNav = () => {
     const [activeTab, setActiveTab] = useState("Home");
     const navItems = [
         { name: "Home", icon: Home, href: "/" },
-        { name: "Search", icon: Search, href: "#" },
-        { name: "Bookings", icon: Briefcase, href: "my-bookings" },
-        { name: "Offers", icon: BadgePercent, href: "offers" },
-        { name: "Account", icon: User, href: "account" },
+        { name: "Search", icon: Search, href: "/search-properties" },
+        { name: "Bookings", icon: Briefcase, href: "/my-bookings" },
+        { name: "Offers", icon: BadgePercent, href: "/offers" },
+        { name: "Account", icon: User, href: "/account" },
     ];
 
     return (
@@ -26,8 +26,8 @@ const BottomNav = () => {
                         <item.icon
                             size={24}
                             className={`transition-colors ${activeTab === item.name
-                                    ? "text-red-500" // Active color from OYO image
-                                    : "text-gray-500"
+                                ? "text-red-500" // Active color from OYO image
+                                : "text-gray-500"
                                 }`}
                         />
                         <span

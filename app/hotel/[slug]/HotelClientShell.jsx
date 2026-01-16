@@ -139,7 +139,7 @@ export default function HotelClientShell({ hotel }) {
 
   return (
     <div className="font-sans bg-gray-50 min-h-screen pb-20 md:pb-0">
-      <StickyHotelHeader title={hotel.name} />
+      <StickyHotelHeader title={hotel.name} hotelId={hotel.id || hotel._id} />
 
       {/* Full Width Hero */}
       <div className="w-full md:mt-0">

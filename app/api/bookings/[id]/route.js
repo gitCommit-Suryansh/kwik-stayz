@@ -26,17 +26,17 @@ export async function GET(req, { params }) {
       );
     }
 
-    // Include hotel image if possible. Since we only store basic details in booking,
-    // we might want to fetch the live Hotel document for images.
     const hotel = await Hotel.findById(booking.hotel.id)
-      .select("images")
+      .select("slug heroImage geo")
       .lean();
 
     const enrichedBooking = {
       ...booking,
       hotel: {
         ...booking.hotel,
-        image: hotel?.images?.[0] || null,
+        image: hotel?.heroImage || null,
+        slug: hotel?.slug || null,
+        geo: hotel?.geo || null,
       },
     };
 

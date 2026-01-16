@@ -62,6 +62,8 @@ export default function BookingDetailsPage() {
     createdAt,
   } = booking;
 
+  console.log(hotel);
+
   // Formatting
   const checkInDate = stay.checkIn ? new Date(stay.checkIn) : null;
   const checkOutDate = stay.checkOut ? new Date(stay.checkOut) : null;
@@ -215,7 +217,7 @@ export default function BookingDetailsPage() {
         {/* 4. Hotel Info Split */}
         <div className="flex gap-4 mb-8">
           <div className="flex-1">
-            <Link href={`/hotels/${hotel._id || "#"}`}>
+            <Link href={`/hotel/${hotel.slug || "#"}`}>
               <h3 className="text-lg font-bold text-gray-900 leading-tight mb-2 hover:text-[#E53935] hover:underline transition-colors cursor-pointer">
                 {hotel.name}
               </h3>
@@ -242,9 +244,18 @@ export default function BookingDetailsPage() {
             <p className="text-[10px] font-bold text-[#E53935] uppercase tracking-wide mb-1">
               GUESTS
             </p>
-            <p className="text-lg font-bold text-gray-900 leading-none">
-              {booking.rooms.reduce((acc, r) => acc + r.guests, 0)}
-            </p>
+            <div className="leading-none">
+              <span className="text-lg font-bold text-gray-900 block">
+                {booking.rooms.reduce((acc, r) => acc + r.guests, 0)}
+              </span>
+              {booking.rooms.reduce((acc, r) => acc + (r.extras || 0), 0) >
+                0 && (
+                <span className="text-[10px] text-gray-500 font-medium truncate block max-w-full">
+                  + {booking.rooms.reduce((acc, r) => acc + (r.extras || 0), 0)}{" "}
+                  Extras
+                </span>
+              )}
+            </div>
           </div>
           {/* Rooms */}
           <div className="bg-gray-50 p-4 rounded-xl text-left border border-gray-100 flex flex-col justify-between">
@@ -299,9 +310,7 @@ export default function BookingDetailsPage() {
             <div className="flex justify-between items-center">
               <p className="text-xs text-gray-500">{hotel.locality}</p>
               <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                  hotel.name + " " + hotel.address
-                )}`}
+                href={`https://www.google.com/maps/dir/?api=1&destination=${hotel.geo?.lat},${hotel.geo?.lng}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs font-bold text-[#E53935] hover:underline"
@@ -324,7 +333,7 @@ export default function BookingDetailsPage() {
             <p className="text-xs text-gray-500">Call our 24/7 support line</p>
           </div>
           <a
-            href="tel:+911234567890"
+            href="tel:+917709475075"
             className="ml-auto text-xs font-bold bg-white border border-gray-200 px-3 py-1.5 rounded-full hover:bg-gray-50 transition-colors"
           >
             Call Now

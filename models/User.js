@@ -21,6 +21,7 @@ const UserSchema = new mongoose.Schema(
       enum: ["google", "email"],
       required: true,
     },
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }],
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
