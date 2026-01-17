@@ -5,7 +5,7 @@ import HomeSearchBar from "@/components/home/HomeSearchBar";
 import BottomNav from "@/components/home/BottomNav";
 
 export default function SearchPropertiesPage() {
-    console.log("SEARCH PROPERTIES GOOGLE CLIENT ID:", process.env.GOOGLE_CLIENT_ID);
+    console.log("SEARCH PROPERTIES GOOGLE CLIENT ID:", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
