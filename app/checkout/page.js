@@ -79,6 +79,10 @@ export default function CheckoutPage() {
             pricing={payload.pricing}
             loading={loading}
             onPay={async () => {
+              if (!user) {
+                router.push("/auth/login?redirect=/checkout");
+                return;
+              }
               setLoading(true);
               const bookingPayload = {
                 hotelId: payload.hotel?.id,
@@ -90,19 +94,12 @@ export default function CheckoutPage() {
                 userId: user?._id,
               };
 
-              console.log("Initiating Booking with Payload:", bookingPayload);
-
               try {
                 const res = await axios.post(
                   "/api/bookings/initiate",
                   bookingPayload,
                 );
-                console.log("Booking API Response:", res.data);
                 const tokenUrl = res.data.redirectUrl;
-
-                // Mobile Deep Linking Fix:
-                // Instead of using PhonePeCheckout.transact, we redirect directly to the URL.
-                // This allows mobile browsers to handle UPI intent links natively.
                 // window.PhonePeCheckout.transact({ tokenUrl });
                 window.location.href = tokenUrl;
               } catch (error) {

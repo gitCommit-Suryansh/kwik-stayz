@@ -1,10 +1,11 @@
 "use client";
 
 import { GoogleLogin } from "@react-oauth/google";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function GoogleLoginButton() {
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     const handleSuccess = async (credentialResponse) => {
         try {
@@ -26,7 +27,8 @@ export default function GoogleLoginButton() {
 
             // ✅ Cookie is already set by backend
             // ✅ Now redirect client
-            router.push("/");
+            const redirect = searchParams.get("redirect");
+            router.push(redirect || "/");
         } catch (err) {
             console.error("Google login error:", err);
             alert("Google sign-in failed. Please try again.");

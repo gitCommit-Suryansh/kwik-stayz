@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [mode, setMode] = useState("login"); // login | signup
   const [email, setEmail] = useState("");
@@ -26,7 +27,7 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
-          isSignup ? { name, email, password } : { email, password }
+          isSignup ? { name, email, password } : { email, password },
         ),
       });
 
@@ -37,7 +38,9 @@ export default function LoginPage() {
       }
 
       // Auth cookie is already set by backend
-      router.replace("/");
+      // Auth cookie is already set by backend
+      const redirect = searchParams.get("redirect");
+      router.replace(redirect || "/");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -107,8 +110,8 @@ export default function LoginPage() {
             {loading
               ? "Please wait..."
               : isSignup
-              ? "Create account"
-              : "Sign in"}
+                ? "Create account"
+                : "Sign in"}
           </button>
         </form>
 

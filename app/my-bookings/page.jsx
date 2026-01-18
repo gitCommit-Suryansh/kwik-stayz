@@ -211,7 +211,21 @@ function BookingCard({ booking, router }) {
         }
     };
 
-    const handleAction = () => {
+    const handleAction = (actionType) => {
+        if (actionType === "DIRECTIONS") {
+            const lat = hotel?.id?.geo?.lat;
+            const lng = hotel?.id?.geo?.lng;
+            if (lat && lng) {
+                window.open(
+                    `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+                    "_blank"
+                );
+            } else {
+                alert("Location coordinates not available");
+            }
+            return;
+        }
+
         if (status === "CONFIRMED" || status === "PENDING_PAYMENT") {
             router.push(`/booking/${booking._id}`);
         } else {
@@ -256,7 +270,11 @@ function BookingCard({ booking, router }) {
                 <div className="h-px bg-gray-100 w-full" />
                 <div className="flex items-center text-sm font-medium text-gray-600">
                     <button
-                        onClick={handleAction}
+                        onClick={() =>
+                            status === "CONFIRMED" || status === "PENDING_PAYMENT"
+                                ? handleAction("DIRECTIONS")
+                                : handleAction()
+                        }
                         className="flex-1 py-3 hover:bg-gray-50 hover:text-red-600 flex items-center justify-center gap-2 border-r border-gray-100 transition-colors"
                     >
                         {status === "CONFIRMED" || status === "PENDING_PAYMENT" ? (
@@ -266,7 +284,7 @@ function BookingCard({ booking, router }) {
                         )}
                     </button>
                     <button
-                        onClick={() => router.push("/support")}
+                        onClick={() => router.push("/contact")}
                         className="flex-1 py-3 hover:bg-gray-50 hover:text-red-600 flex items-center justify-center gap-2 transition-colors"
                     >
                         <HelpCircle size={16} /> Need Help?
@@ -339,7 +357,11 @@ function BookingCard({ booking, router }) {
                         </div>
                         <div className="flex flex-col gap-3">
                             <button
-                                onClick={handleAction}
+                                onClick={() =>
+                                    status === "CONFIRMED" || status === "PENDING_PAYMENT"
+                                        ? handleAction("DIRECTIONS")
+                                        : handleAction()
+                                }
                                 className="py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white flex items-center justify-center gap-2 rounded-lg transition-colors font-medium text-sm shadow-sm"
                             >
                                 {status === "CONFIRMED" || status === "PENDING_PAYMENT" ? (
@@ -349,7 +371,7 @@ function BookingCard({ booking, router }) {
                                 )}
                             </button>
                             <button
-                                onClick={() => router.push("/support")}
+                                onClick={() => router.push("/contact")}
                                 className="py-2.5 px-4 bg-white hover:bg-gray-50 text-gray-600 flex items-center justify-center gap-2 border border-gray-300 rounded-lg transition-colors font-medium text-sm"
                             >
                                 <HelpCircle size={16} /> Need Help?

@@ -13,7 +13,7 @@ export async function GET(req) {
     if (!token) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -22,14 +22,14 @@ export async function GET(req) {
     if (!decoded?.userId) {
       return NextResponse.json(
         { success: false, message: "Invalid token" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const bookings = await Booking.find({ userId: decoded.userId })
       .populate({
         path: "hotel.id",
-        select: "heroImage address slug", // Only fetch the image
+        select: "heroImage address slug geo", // Only fetch the image
         model: Hotel,
       })
       .sort({ createdAt: -1 })
@@ -43,7 +43,7 @@ export async function GET(req) {
     console.error("Fetch My Bookings Error:", error);
     return NextResponse.json(
       { success: false, message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

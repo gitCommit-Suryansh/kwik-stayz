@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 import Navbar from "@/components/home/Navbar";
 import ProfileEdit from "@/components/account/ProfileEdit";
-import { Loader2, Briefcase, ChevronRight, ArrowLeft, Heart } from "lucide-react";
+import { Loader2, Briefcase, ChevronRight, ArrowLeft, Heart, LogOut } from "lucide-react";
 
 export default function AccountPage() {
     const [user, setUser] = useState(null);
@@ -35,10 +36,21 @@ export default function AccountPage() {
         setUser(updatedUser);
     };
 
+    const handleLogout = async () => {
+        try {
+            await axios.post("/api/auth/logout");
+            router.push("/");
+            // Force refresh to clear state if needed, though router.push usually suffices
+            router.refresh();
+        } catch (error) {
+            console.error("Logout failed", error);
+        }
+    };
+
     if (loadingParams.page) {
         return (
             <main className="min-h-screen bg-gray-50 pt-32 pb-12 flex items-center justify-center">
-                <Loader2 className="animate-spin text-blue-600" size={32} />
+                <Loader2 className="animate-spin text-red-600" size={32} />
             </main>
         );
     }
@@ -46,31 +58,44 @@ export default function AccountPage() {
     if (!user) return null; // Will redirect
 
     return (
-        <div className="min-h-screen bg-gray-50/50 pb-12 font-sans">
+        <div className="min-h-screen bg-gray-50 font-sans pb-24 md:pb-12">
             {/* Desktop Navbar */}
             <div className="hidden md:block">
                 <Navbar />
             </div>
 
-            {/* Mobile Header */}
-            <div className="md:hidden bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
-                <div className="max-w-4xl mx-auto px-4 h-14 flex items-center relative justify-center">
+            {/* Mobile Header - Premium Gradient */}
+            <div className="md:hidden bg-gradient-to-r from-red-600 to-red-700 text-white pb-8 pt-6 rounded-b-[2rem] shadow-lg mb-6 sticky top-0 z-10">
+                <div className="px-6 flex items-center justify-between mb-6">
                     <button
                         onClick={() => router.push("/")}
-                        className="absolute left-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors backdrop-blur-sm"
                     >
-                        <ArrowLeft size={20} className="text-gray-700" />
+                        <ArrowLeft size={20} className="text-white" />
                     </button>
-                    <h1 className="text-lg font-bold text-gray-900">
-                        Account
-                    </h1>
+                    <h1 className="text-lg font-bold tracking-wide">My Account</h1>
+                    <div className="w-9"></div> {/* Spacer for centering */}
+                </div>
+
+                <div className="px-6 flex items-center gap-4">
+                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-red-600 shadow-inner border-4 border-white/20">
+                        <span className="text-2xl font-bold">
+                            {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                        </span>
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold leading-tight">
+                            {user.name || "Traveler"}
+                        </h2>
+                        <p className="text-red-100 text-sm">{user.email}</p>
+                    </div>
                 </div>
             </div>
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:pt-32">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-0 md:pt-32">
 
-                {/* Header Section */}
-                <div className="mb-8">
+                {/* Desktop Header Section */}
+                <div className="hidden md:block mb-8">
                     <h1 className="text-3xl font-bold text-gray-900">
                         Hello, {user.name?.split(" ")[0] || "Traveler"}! 👋
                     </h1>
@@ -81,49 +106,83 @@ export default function AccountPage() {
 
                     {/* LEFT COLUMN - Bookings CTA */}
                     <div className="lg:col-span-2 space-y-4">
+
+                        {/* Mobile Section Title */}
+                        <h3 className="md:hidden text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 px-2">
+                            Menu
+                        </h3>
+
+                        {/* My Bookings Card */}
                         <div
                             onClick={() => router.push("/my-bookings")}
-                            className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-all group"
+                            className="bg-white rounded-2xl border border-gray-100 md:border-gray-200 p-5 shadow-sm active:scale-[0.98] md:active:scale-100 transition-all cursor-pointer hover:shadow-md group flex items-center justify-between"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
-                                    <Briefcase size={20} />
+                                <div className="w-12 h-12 bg-blue-50/80 rounded-full flex items-center justify-center text-blue-600">
+                                    <Briefcase size={22} />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-bold text-gray-900">My Bookings</h2>
-                                    <p className="text-sm text-gray-500">View and manage your bookings</p>
+                                    <h2 className="text-lg font-bold text-gray-900 leading-tight">My Bookings</h2>
+                                    <p className="text-sm text-gray-500 mt-0.5">Check your upcoming stays</p>
                                 </div>
                             </div>
-                            <div className="flex items-center text-gray-400 group-hover:text-blue-600 transition-colors">
-                                <span className="text-sm font-medium mr-2 hidden sm:block">View All</span>
-                                <ChevronRight size={20} />
+                            <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                <ChevronRight size={18} />
                             </div>
                         </div>
 
-                        <div
+                        {/* Wishlist */}
+                        <button
                             onClick={() => router.push("/wishlist")}
-                            className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-all group"
+                            className="w-full flex items-center justify-between p-4 rounded-xl bg-white md:bg-transparent hover:bg-gray-50 transition-colors group text-left border border-gray-100 md:border-transparent"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-red-600">
-                                    <Heart size={20} />
+                                <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
+                                    <Heart size={18} />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-bold text-gray-900">My Wishlist</h2>
-                                    <p className="text-sm text-gray-500">View your saved properties</p>
+                                    <span className="block font-bold text-gray-900">My Wishlist</span>
+                                    <span className="block text-xs text-gray-500 md:hidden">Saved places</span>
                                 </div>
                             </div>
-                            <div className="flex items-center text-gray-400 group-hover:text-red-600 transition-colors">
-                                <span className="text-sm font-medium mr-2 hidden sm:block">View All</span>
-                                <ChevronRight size={20} />
+                            <ChevronRight size={18} className="text-gray-300 group-hover:text-red-600 transition-colors" />
+                        </button>
+
+                        {/* Contact Link */}
+                        <button
+                            onClick={() => router.push("/contact")}
+                            className="w-full flex items-center justify-between p-4 rounded-xl bg-white md:bg-transparent hover:bg-gray-50 transition-colors group text-left border border-gray-100 md:border-transparent"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 group-hover:scale-110 transition-transform">
+                                    <span className="font-bold text-lg">?</span>
+                                </div>
+                                <span className="block font-bold text-gray-900">Help & Support</span>
                             </div>
+                            <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-900 transition-colors" />
+                        </button>
+
+                        {/* Mobile Logout */}
+                        <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center justify-between p-4 rounded-xl bg-white md:bg-transparent hover:bg-red-50 transition-colors group text-left border border-gray-100 md:border-transparent md:hidden mt-4"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-red-100 group-hover:text-red-600 transition-colors">
+                                    <LogOut size={18} />
+                                </div>
+                                <span className="block font-bold text-gray-900 group-hover:text-red-700">Log Out</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    {/* RIGHT CONTENT (Profile Edit) */}
+                    <div className="flex-1">
+                        <div className="bg-white md:bg-transparent rounded-3xl p-6 md:p-0 border border-gray-100 md:border-none shadow-sm md:shadow-none">
+                            <ProfileEdit user={user} onUpdate={handleProfileUpdate} />
                         </div>
                     </div>
 
-                    {/* RIGHT COLUMN - Profile Sidebar */}
-                    <div className="lg:col-span-1">
-                        <ProfileEdit user={user} onUpdate={handleProfileUpdate} />
-                    </div>
                 </div>
             </main>
         </div>
