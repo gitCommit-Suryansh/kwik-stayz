@@ -15,7 +15,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 
 export default function Providers({ children }) {
     return (
-        <GoogleOAuthProvider clientId="79383270158-dde3fb91rl1gjbqk0e7qbgfloksn22nk.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId="509482865609-kkcnqatpc8sg91tnval0gp94sm8b417h.apps.googleusercontent.com">
             {children}
         </GoogleOAuthProvider>
     );
