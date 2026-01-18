@@ -1,0 +1,24 @@
+# KwikStays Production Architecture (VPS)
+
+/var/www/
+└── kwikstays/
+    ├── app/
+    │   └── KwikStays/          <-- [MAIN SOURCE CODE]
+    ├── docker-compose.yml
+    └── .env.production
+
+
+#DEPLOYMENT STEPS
+
+1. Clone the repository to the VPS:
+    CD /var/www/kwikstays/app
+    git clone <repository-url>
+    cd KwikStays
+
+2. Build the Docker image: 
+    /KwikStays
+    docker build --build-arg NEXT_PUBLIC_GOOGLE_CLIENT_ID="<INSERT_HARCODED_GOOGLE_CLIENT_ID_HERE>" -t kwikstays:prod .
+
+3. Run the Docker container:
+    docker compose up -d
+
