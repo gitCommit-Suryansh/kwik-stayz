@@ -1,10 +1,21 @@
+// "use client";
+
+// import { GoogleOAuthProvider } from "@react-oauth/google";
+
+// export default function Providers({ children }) {
+//     return (
+//         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
+//             {children}
+//         </GoogleOAuthProvider>
+//     );
+// }
 "use client";
 
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 export default function Providers({ children }) {
     return (
-        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
+        <GoogleOAuthProvider clientId="79383270158-dde3fb91rl1gjbqk0e7qbgfloksn22nk.apps.googleusercontent.com">
             {children}
         </GoogleOAuthProvider>
     );
