@@ -236,6 +236,25 @@ export async function POST(request) {
       gallery.push(uploadResult.secure_url);
     }
 
+    /* ---------------- Upload Room Type Images ---------------- */
+    for (let i = 0; i < roomTypes.length; i++) {
+      const file = formData.get(`roomTypeImage_${i}`);
+      if (file && file.size > 0) {
+        const buffer = Buffer.from(await file.arrayBuffer());
+
+        const uploadResult = await new Promise((resolve, reject) => {
+          cloudinary.uploader
+            .upload_stream({ folder: "KWIK-STAYS" }, (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            })
+            .end(buffer);
+        });
+
+        roomTypes[i].image = uploadResult.secure_url;
+      }
+    }
+
     /* ---------------- Resolve City ---------------- */
     const city = await City.findOne({ slug: citySlug });
     if (!city) {
