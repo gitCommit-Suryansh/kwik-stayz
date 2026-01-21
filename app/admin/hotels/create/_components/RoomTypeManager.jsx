@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { PlusIcon, TrashIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
-import ImageUpload from "./ImageUpload";
+import ImageUpload from "../../../_components/ImageUpload";
 
 const BED_TYPES = ["1 King Bed", "1 Queen Bed", "2 Queen Beds", "2 Single Beds", "3 Single Beds"];
 const COMMON_AMENITIES = ["AC", "TV", "WiFi", "Mini Fridge", "Geyser", "Heater", "Balcony", "Work Desk"];

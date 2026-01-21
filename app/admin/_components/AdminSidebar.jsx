@@ -14,10 +14,10 @@ import {
 const navigation = [
     { name: "Dashboard", href: "/admin", icon: Squares2X2Icon },
     { name: "Hotels", href: "/admin/hotels/create", icon: BuildingOffice2Icon },
-    { name: "Cities", href: "/admin/cities/create", icon: MapIcon },
-    { name: "Localities", href: "/admin/localities/create", icon: HomeModernIcon },
-    { name: "Categories", href: "/admin/categories/create", icon: TagIcon },
-    { name: "Home Cities", href: "/admin/home-cities/create", icon: StarIcon },
+    { name: "Cities", href: "/admin/cities", icon: MapIcon },
+    { name: "Localities", href: "/admin/localities", icon: HomeModernIcon },
+    { name: "Categories", href: "/admin/categories", icon: TagIcon },
+    { name: "Home Cities", href: "/admin/home-cities", icon: StarIcon },
 ];
 
 export default function AdminSidebar() {

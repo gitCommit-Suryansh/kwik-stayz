@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ImageUpload from "./ImageUpload";
+import ImageUpload from "../../../_components/ImageUpload";
 import RoomTypeManager from "./RoomTypeManager";
 import { useRouter } from "next/navigation";
 import { CheckCircleIcon, ExclamationCircleIcon, MapPinIcon, PhotoIcon, TagIcon, CurrencyRupeeIcon, BuildingOfficeIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -476,16 +476,36 @@ export default function HotelForm() {
                     </div>
 
 
-                    <div className="sm:col-span-3">
-                        <label className="block text-sm font-medium leading-6 text-gray-900">Latitude</label>
-                        <div className="mt-2">
-                            <input type="number" step="any" value={formData.geo.lat} onChange={e => handleNestedChange('geo', 'lat', e.target.value)} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 pl-2" />
+                    {/* Coordinates Inputs */}
+                    <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium leading-6 text-gray-900">Latitude</label>
+                            <div className="mt-2">
+                                <input
+                                    type="number"
+                                    step="any"
+                                    value={formData.geo.lat}
+                                    onChange={e => handleNestedChange('geo', 'lat', e.target.value)}
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 pl-2"
+                                    placeholder="0.000000"
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <div className="sm:col-span-3">
-                        <label className="block text-sm font-medium leading-6 text-gray-900">Longitude</label>
-                        <div className="mt-2">
-                            <input type="number" step="any" value={formData.geo.lng} onChange={e => handleNestedChange('geo', 'lng', e.target.value)} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 pl-2" />
+                        <div>
+                            <label className="block text-sm font-medium leading-6 text-gray-900">Longitude</label>
+                            <div className="mt-2">
+                                <input
+                                    type="number"
+                                    step="any"
+                                    value={formData.geo.lng}
+                                    onChange={e => handleNestedChange('geo', 'lng', e.target.value)}
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 pl-2"
+                                    placeholder="0.000000"
+                                />
+                            </div>
+                        </div>
+                        <div className="col-span-full">
+                            <p className="text-xs text-gray-500">Enter coordinates manually (e.g. from Google Maps).</p>
                         </div>
                     </div>
                 </div>
