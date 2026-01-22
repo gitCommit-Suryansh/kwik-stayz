@@ -28,7 +28,7 @@ export default function GoogleLoginButton() {
             // ✅ Cookie is already set by backend
             // ✅ Now redirect client
             const redirect = searchParams.get("redirect");
-            router.push(redirect || "/");
+            window.location.href = redirect || "/";
         } catch (err) {
             console.error("Google login error:", err);
             alert("Google sign-in failed. Please try again.");

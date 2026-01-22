@@ -40,7 +40,7 @@ function LoginForm() {
 
       // Auth cookie is already set by backend
       const redirect = searchParams.get("redirect");
-      router.replace(redirect || "/");
+      window.location.href = redirect || "/";
     } catch (err) {
       setError(err.message);
     } finally {

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { verifyToken } from "@/lib/auth/jwt";
@@ -30,7 +31,7 @@ export async function GET(req) {
     console.error("Auth me error:", err);
     return NextResponse.json(
       { user: null },
-      { status: 200 } // IMPORTANT: never 401 here
+      { status: 200 }, // IMPORTANT: never 401 here
     );
   }
 }
