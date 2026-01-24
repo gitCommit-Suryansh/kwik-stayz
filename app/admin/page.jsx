@@ -1,4 +1,8 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { format } from "date-fns";
 import {
     BuildingOffice2Icon,
     MapIcon,
@@ -10,13 +14,6 @@ import {
     CurrencyRupeeIcon,
     ClockIcon
 } from "@heroicons/react/24/outline";
-
-const stats = [
-    { name: 'Total Revenue', value: '₹4.2L', change: '+12.5%', changeType: 'positive', icon: CurrencyRupeeIcon },
-    { name: 'Active Hotels', value: '24', change: '+2', changeType: 'positive', icon: BuildingOffice2Icon },
-    { name: 'Total Bookings', value: '1,432', change: '+18%', changeType: 'positive', icon: UsersIcon },
-    { name: 'Avg. Stay', value: '2.4 Days', change: '-1.2%', changeType: 'negative', icon: ClockIcon },
-];
 
 const quickLinks = [
     {
@@ -57,6 +54,47 @@ const quickLinks = [
 ];
 
 export default function AdminDashboard() {
+    const [stats, setStats] = useState({
+        totalRevenue: 0,
+        activeHotels: 0,
+        totalBookings: 0,
+        avgStay: 0,
+        recentBookings: []
+    });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await fetch("/api/admin/dashboard");
+                if (res.ok) {
+                    const data = await res.json();
+                    setStats(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch dashboard stats", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
+
+    const statCards = [
+        { name: 'Total Revenue', value: `₹${stats.totalRevenue.toLocaleString()}`, icon: CurrencyRupeeIcon, color: 'text-green-600' },
+        { name: 'Active Hotels', value: stats.activeHotels, icon: BuildingOffice2Icon, color: 'text-blue-600' },
+        { name: 'Total Bookings', value: stats.totalBookings, icon: UsersIcon, color: 'text-purple-600' },
+        { name: 'Avg. Stay', value: `${stats.avgStay.toFixed(1)} Days`, icon: ClockIcon, color: 'text-orange-600' },
+    ];
+
+    if (loading) {
+        return (
+            <div className="flex h-96 items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary"></div>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-10">
 
@@ -70,15 +108,15 @@ export default function AdminDashboard() {
                     <button className="px-4 py-2 bg-white border border-gray-200 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50">
                         Download Report
                     </button>
-                    <button className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90">
+                    <Link href="/" target="_blank" className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90">
                         View Live Site
-                    </button>
+                    </Link>
                 </div>
             </div>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {stats.map((item) => (
+                {statCards.map((item) => (
                     <div key={item.name} className="relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                         <dt>
                             <div className="absolute rounded-md bg-primary/5 p-3">
@@ -88,13 +126,6 @@ export default function AdminDashboard() {
                         </dt>
                         <dd className="ml-16 flex items-baseline pb-1 sm:pb-2">
                             <p className="text-2xl font-semibold text-gray-900">{item.value}</p>
-                            <p
-                                className={`ml-2 flex items-baseline text-sm font-semibold ${item.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                                    }`}
-                            >
-                                {item.changeType === 'positive' && <ArrowTrendingUpIcon className="h-4 w-4 mr-1 self-center shrink-0" />}
-                                {item.change}
-                            </p>
                         </dd>
                     </div>
                 ))}
@@ -123,33 +154,48 @@ export default function AdminDashboard() {
                         ))}
                     </div>
 
-                    {/* Recent Activity Table (Mock) */}
+                    {/* Recent Details Table */}
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mt-8">
                         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                            <h3 className="font-semibold text-gray-900">Recent Hotels Added</h3>
-                            <Link href="#" className="text-sm text-primary font-medium hover:underline">View All</Link>
+                            <h3 className="font-semibold text-gray-900">Recent Bookings</h3>
+                            <Link href="/admin/bookings" className="text-sm text-primary font-medium hover:underline">View All</Link>
                         </div>
                         <div className="overflow-x-auto">
-                            <table className="min-w-full whitespace-nowrap text-left text-sm">
-                                <thead className="bg-gray-50/50 text-gray-500">
-                                    <tr>
-                                        <th className="px-6 py-3 font-medium">Hotel Name</th>
-                                        <th className="px-6 py-3 font-medium">City</th>
-                                        <th className="px-6 py-3 font-medium">Status</th>
-                                        <th className="px-6 py-3 font-medium">Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100">
-                                    {[1, 2, 3].map((i) => (
-                                        <tr key={i} className="hover:bg-gray-50/50 transition-colors">
-                                            <td className="px-6 py-3 font-medium text-gray-900">Kwik Stays Premium {i}</td>
-                                            <td className="px-6 py-3 text-gray-500">New Delhi</td>
-                                            <td className="px-6 py-3"><span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span></td>
-                                            <td className="px-6 py-3 text-gray-400">Jan {10 + i}, 2026</td>
+                            {stats.recentBookings.length === 0 ? (
+                                <p className="text-center py-6 text-gray-500 text-sm">No recent bookings found.</p>
+                            ) : (
+                                <table className="min-w-full whitespace-nowrap text-left text-sm">
+                                    <thead className="bg-gray-50/50 text-gray-500">
+                                        <tr>
+                                            <th className="px-6 py-3 font-medium">Guest</th>
+                                            <th className="px-6 py-3 font-medium">Hotel</th>
+                                            <th className="px-6 py-3 font-medium">Status</th>
+                                            <th className="px-6 py-3 font-medium">Date</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100">
+                                        {stats.recentBookings.map((booking) => (
+                                            <tr key={booking._id} className="hover:bg-gray-50/50 transition-colors">
+                                                <td className="px-6 py-3 font-medium text-gray-900">
+                                                    {booking.guestDetails?.fullName || "Guest"}
+                                                </td>
+                                                <td className="px-6 py-3 text-gray-500">{booking.hotel?.name}</td>
+                                                <td className="px-6 py-3">
+                                                    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium 
+                                                        ${booking.status === 'CONFIRMED' ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20' :
+                                                            booking.status === 'PENDING_PAYMENT' ? 'bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-600/20' :
+                                                                'bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-600/20'}`}>
+                                                        {booking.status.replace("_", " ")}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-3 text-gray-400">
+                                                    {booking.createdAt && format(new Date(booking.createdAt), "MMM d, HH:mm")}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -158,22 +204,7 @@ export default function AdminDashboard() {
                 <div className="space-y-6">
                     <h2 className="text-lg font-semibold text-gray-900">System Activity</h2>
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                        <ul className="space-y-6">
-                            {[1, 2, 3, 4].map((i) => (
-                                <li key={i} className="relative flex gap-x-4">
-                                    <div className="absolute left-0 top-0 flex w-6 justify-center -bottom-6">
-                                        <div className="w-px bg-gray-200"></div>
-                                    </div>
-                                    <div className="relative flex h-6 w-6 flex-none items-center justify-center bg-white">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-gray-100 ring-1 ring-gray-300"></div>
-                                    </div>
-                                    <p className="flex-auto py-0.5 text-xs leading-5 text-gray-500">
-                                        <span className="font-medium text-gray-900">Admin</span> created a new hotel property in <span className="font-medium text-gray-900">Bangalore</span>.
-                                    </p>
-                                    <time className="flex-none py-0.5 text-xs leading-5 text-gray-500">1h ago</time>
-                                </li>
-                            ))}
-                        </ul>
+                        <p className="text-sm text-gray-500 italic">No verified system notifications yet.</p>
                     </div>
 
                     {/* Promo / Banner */}

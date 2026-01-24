@@ -13,11 +13,13 @@ import {
 
 const navigation = [
     { name: "Dashboard", href: "/admin", icon: Squares2X2Icon },
-    { name: "Hotels", href: "/admin/hotels/create", icon: BuildingOffice2Icon },
+    { name: "Hotels", href: "/admin/hotels", icon: BuildingOffice2Icon },
     { name: "Cities", href: "/admin/cities", icon: MapIcon },
     { name: "Localities", href: "/admin/localities", icon: HomeModernIcon },
     { name: "Categories", href: "/admin/categories", icon: TagIcon },
     { name: "Home Cities", href: "/admin/home-cities", icon: StarIcon },
+    { name: "Bookings", href: "/admin/bookings", icon: Squares2X2Icon },
+    { name: "Payments", href: "/admin/payments", icon: StarIcon },
 ];
 
 export default function AdminSidebar() {

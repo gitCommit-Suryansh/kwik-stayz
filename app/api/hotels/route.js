@@ -341,3 +341,21 @@ export async function POST(request) {
     );
   }
 }
+
+export async function GET() {
+  try {
+    await connectDB();
+    const hotels = await Hotel.find()
+      .populate("city", "name")
+      .populate("locality", "name")
+      .sort({ createdAt: -1 });
+
+    return NextResponse.json(hotels);
+  } catch (error) {
+    console.error("GET /api/hotels error:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch hotels" },
+      { status: 500 },
+    );
+  }
+}
