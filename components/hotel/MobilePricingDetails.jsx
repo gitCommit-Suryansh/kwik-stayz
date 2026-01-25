@@ -37,7 +37,7 @@ export default function MobilePricingDetails({
   };
 
   return (
-    <section ref={pricingRef} className="my-8 md:hidden px-1">
+    <section ref={pricingRef} className="my-8 lg:hidden px-1">
       <div className="bg-white border text-sm border-gray-200 rounded-xl shadow-sm p-4 mb-6">
         <h2 className="text-base font-bold mb-4 text-gray-900 border-b pb-2">Booking Details</h2>
 

@@ -2,7 +2,7 @@ import { Star } from "lucide-react";
 import CategoryBadge from "./CategoryBadge";
 export default function MobileHotelInfo({ hotel }) {
   return (
-    <div className="md:hidden px-1 pt-2 pb-3">
+    <div className="lg:hidden px-1 pt-2 pb-3">
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <CategoryBadge categories={hotel.categories} />
       </div>

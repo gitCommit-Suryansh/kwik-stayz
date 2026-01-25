@@ -138,7 +138,7 @@ export default function HotelClientShell({ hotel, similarHotels = [] }) {
 
 
   return (
-    <div className="font-sans bg-gray-50 min-h-screen pb-20 md:pb-0">
+    <div className="font-sans bg-gray-50 min-h-screen pb-20 lg:pb-0">
       <StickyHotelHeader title={hotel.name} hotelId={hotel.id || hotel._id} />
 
       {/* Full Width Hero */}
@@ -148,16 +148,16 @@ export default function HotelClientShell({ hotel, similarHotels = [] }) {
 
       <div className="max-w-7xl mx-auto">
         {/* Desktop Hotel Info (Below Hero on Desktop) */}
-        <div className="hidden md:block px-3 mb-6">
+        <div className="hidden lg:block px-3 mb-6">
           <DesktopHotelInfo hotel={hotel} />
         </div>
         <div className="flex flex-col lg:flex-row gap-8 px-2 md:px-3">
           <div className="flex-1 bg-white rounded-2xl shadow-lg p-6 md:p-8 lg:p-10 -mt-8 md:mt-0 relative z-10">
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <Breadcrumb city={hotel.city.name} cityName={hotel.city.slug} locality={hotel.locality.name} localityName={hotel.locality.slug} />
             </div>
             <MobileHotelInfo hotel={hotel} />
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
               <Breadcrumb city={hotel.city.name} cityName={hotel.city.slug} locality={hotel.locality.name} localityName={hotel.locality.slug} />
             </div>
             {/* <Gallery gallery={hotel.gallery || []} /> */}

@@ -4,7 +4,7 @@ export default function MobileStickyBookingBar({ hotel, isVisible, selectedRoom,
   const originalPrice = selectedRoom ? selectedRoom.originalPrice : hotel.originalPrice;
   return (
     <div
-      className={`md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.1)] p-4 transition-transform duration-300 ease-in-out
+      className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.1)] p-4 transition-transform duration-300 ease-in-out
                   ${isVisible ? 'translate-y-0' : 'translate-y-full'}`}
     >
       <div className="flex justify-between items-center">

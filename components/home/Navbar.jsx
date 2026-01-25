@@ -63,7 +63,7 @@ const Navbar = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center md:justify-between">
 
                 {/* Logo - Centered on Mobile */}
-                <div
+                {/* <div
                     className="cursor-pointer flex items-center gap-2 group"
                     onClick={() => router.push("/")}
                 >
@@ -72,6 +72,13 @@ const Navbar = () => {
                             Kwik<span className="text-orange-600">Stays</span>
                         </span>
                     </div>
+                    
+                </div> */}
+
+                <div className="flex-shrink-0 cursor-pointer" onClick={() => router.push('/')}>
+                    <span className="text-3xl font-brand text-gray-900 tracking-wide">
+                        Kwik <span className="text-[#f8a11e]">Stays</span>
+                    </span>
                 </div>
 
                 {/* Desktop Nav Links */}
