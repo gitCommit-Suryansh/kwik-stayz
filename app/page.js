@@ -26,10 +26,8 @@ export default async function App() {
   const hotels = await fetchHomeHotels();
   let hotelList = [];
   if (hotels) {
-    // hotelList = hotels.filter((item) => item.isActive).slice(0, 4);
     hotelList = hotels.slice(0, 4);
   }
-  // console.log(hotelList);
 
   return (
     <div className="font-sans">
